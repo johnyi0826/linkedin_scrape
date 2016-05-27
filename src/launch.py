@@ -31,6 +31,7 @@ default_input_file =                        'company.csv'
 NO_COMPANY =                                -1
 LOGIN_LINKEDIN_HOME_PAGE_FAILED =           -2
 JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED =       -3
+FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -4
 
 # Get input company file from local
 input_file = fh.getInputFile()
@@ -69,6 +70,13 @@ if(False == browser.jumpToAdvancedSearchPage()):
     sys.exit(JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED)
 else:
     print("Jump to advanced page succeed!")
+
+# Fill years in current company
+if(False == browser.filterYearsInCurrentCompany()):
+    print("Fill years in current company failed, exit...")
+    sys.exit()
+else:
+    print("Fill years in current company succeed!")
 
 ## Find company addr
 #com_link = fc.getAddress(br, company, bing_prefix)

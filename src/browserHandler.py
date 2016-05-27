@@ -24,7 +24,12 @@ login_button =                  'btn-primary'
 
 tag_home_page_search =          'smart-search-header'
 tag_advanced_search =           'advanced-search'
+tag_left_rail =                 'all-facets-left-rail'
 tag_years_in_current_company =  'facet-yearsInCurrentCompany'
+tag_suggestions =               'suggestions'
+tag_add_button =                'button'
+tag_btn_less_than_one_year =    "//button[@data-id='1']"
+tag_txt_less_than_one_year =    "//li[@data-id='1']"
 
 timeout =                       60
 
@@ -70,6 +75,8 @@ class wait_for_page_load(object):
 # ##################################################################################
 # @brief                Wait for page loaded
 #
+# @param driver         Current page
+# @param next_page_tag  The key words of the page jumped to
 # @return               Page loaded success or not
 # ##################################################################################
 
@@ -84,13 +91,55 @@ def _waitPageLoaded(driver, next_page_tag):
 
 
 # ##################################################################################
+# @brief                Wait for button loaded
+#
+# @param driver         Current page
+# @param left_rail      Left rail area
+# @param group          Curren group area (sub facet)
+# @param suggestion     Suggestion segment
+# @param button         The button need to be loaded
+# @return               Button loaded success or not
+# ##################################################################################
+
+def _waitAddButtonLoaded(driver, left_rail, group, suggestion, button):
+    try: 
+        dr = WebDriverWait(driver, timeout)
+        dr.until(lambda the_driver:the_driver.find_element_by_id(left_rail).find_element_by_id(group).find_element_by_class_name(suggestion).find_element_by_tag_name(button).is_displayed())
+    except:
+        return False
+
+    return True
+
+
+# ##################################################################################
+# @brief                Wait for button loaded
+#
+# @param driver         Current page
+# @param left_rail      Left rail area
+# @param group          Curren group area (sub facet)
+# @param text           Loaded text tag
+# @return               Button loaded success or not
+# ##################################################################################
+
+def _waitTextFilled(driver, left_rail, group, text):
+    try: 
+        dr = WebDriverWait(driver, timeout)
+        dr.until(lambda the_driver:the_driver.find_element_by_id(left_rail).find_element_by_id(group).find_element_by_xpath(text).is_displayed())
+    except:
+        return False
+
+    return True
+
+
+# ##################################################################################
 # @brief                Initial the browser handler
 #
 # @class                BrowserHandler
 # ##################################################################################
 
 class BrowserHandler:
-    mDriver = 0
+    mDriver = None
+    mAdvLeftRail = None
 
 
 # ##################################################################################
@@ -106,7 +155,7 @@ class BrowserHandler:
 # ##################################################################################
 # @brief                Login LinkedIn Recruiter home page
 #
-# @return               Login succeed or not
+# @return               Login success or not
 # ##################################################################################
 
     def loginLinkedin(self):
@@ -134,13 +183,69 @@ class BrowserHandler:
 
 
 # ##################################################################################
-# @brief                Advanced Search
+# @brief                Jump to advanced search Page
 #
-# @return               Search succeed or not
+# @return               Jump success or not
 # ##################################################################################
 
     def jumpToAdvancedSearchPage(self):
         btn_adv_search = self.mDriver.find_element_by_id(tag_advanced_search)
         webdriver.ActionChains(self.mDriver).move_to_element(btn_adv_search).perform()
         self.mDriver.find_element_by_id(tag_advanced_search).click()
+
         return _waitPageLoaded(self.mDriver, tag_years_in_current_company)
+
+
+# ##################################################################################
+# @brief                Fill the filter "Years in current company"
+#
+# @return               Filled success or not
+# ##################################################################################
+
+    def filterYearsInCurrentCompany(self):
+        # Click add button
+        self.mAdvLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
+        if(None == self.mAdvLeftRail):
+            return False
+
+        group_years_in_current_company = None
+        group_years_in_current_company = self.mAdvLeftRail.find_element_by_id(tag_years_in_current_company)
+        if(None == group_years_in_current_company):
+            return False
+
+        btn_years_in_current_comany = None
+        btn_years_in_current_comany = group_years_in_current_company.find_element_by_tag_name(tag_add_button)
+        if(None == btn_years_in_current_comany):
+            return False
+
+        btn_years_in_current_comany.click()
+        if(False == _waitAddButtonLoaded(self.mDriver, tag_left_rail, tag_years_in_current_company, tag_suggestions, tag_add_button)):
+            return False
+
+        # Click first button
+        self.mAdvLeftRail = None
+        self.mAdvLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
+        if(None == self.mAdvLeftRail):
+            return False
+
+        group_years_in_current_company = None
+        group_years_in_current_company = self.mAdvLeftRail.find_element_by_id(tag_years_in_current_company)
+        if(None == group_years_in_current_company):
+            return False
+
+        group_suggestions = None
+        group_suggestions = group_years_in_current_company.find_element_by_class_name(tag_suggestions)
+        if(None == group_suggestions):
+            return False
+
+        btn_less_than_one_year = None
+        #btn_less_than_one_year = group_suggestions.find_element_by_xpath("//button[@data-id='1']")
+        btn_less_than_one_year = group_suggestions.find_element_by_xpath(tag_btn_less_than_one_year)
+        if(None == btn_less_than_one_year):
+            return False
+
+        btn_less_than_one_year.click()
+        if(False == _waitTextFilled(self.mDriver, tag_left_rail, tag_years_in_current_company, tag_txt_less_than_one_year)):
+            return False
+
+        return True
