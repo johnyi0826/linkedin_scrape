@@ -15,6 +15,7 @@ from bs4 import BeautifulSoup
 import sys, csv, re, time, random, os
 
 # import local modules 
+import browserHandler as bh
 from browserHandler import BrowserHandler
 #import findCompany as fc
 #import companyInfo as ci
@@ -31,7 +32,8 @@ default_input_file =                        'company.csv'
 NO_COMPANY =                                -1
 LOGIN_LINKEDIN_HOME_PAGE_FAILED =           -2
 JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED =       -3
-FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -4
+FILL_LOCATION_FAILED =                      -4
+FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -5
 
 # Get input company file from local
 input_file = fh.getInputFile()
@@ -71,12 +73,23 @@ if(False == browser.jumpToAdvancedSearchPage()):
 else:
     print("Jump to advanced page succeed!")
 
+# Fill location USA
+if(False == browser.filterLocation()):
+    print("Fill location failed. exit...")
+    sys.exit(FILL_LOCATION_FAILED)
+else:
+    print("Fill location succeed!")
+
+# Fill company name
+
 # Fill years in current company
+time.sleep(1)
 if(False == browser.filterYearsInCurrentCompany()):
     print("Fill years in current company failed, exit...")
-    sys.exit()
+    sys.exit(FILL_YEARS_IN_CURRENT_COMPANY_FAILED)
 else:
     print("Fill years in current company succeed!")
+
 
 ## Find company addr
 #com_link = fc.getAddress(br, company, bing_prefix)

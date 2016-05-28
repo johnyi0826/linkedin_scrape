@@ -25,11 +25,22 @@ login_button =                  'btn-primary'
 tag_home_page_search =          'smart-search-header'
 tag_advanced_search =           'advanced-search'
 tag_left_rail =                 'all-facets-left-rail'
+tag_li =                        'li'
+tag_form =                      'form'
+tag_class =                     'class'
+tag_facet_wrapper =             'facet-wrapper'
+
 tag_years_in_current_company =  'facet-yearsInCurrentCompany'
 tag_suggestions =               'suggestions'
 tag_add_button =                'button'
 tag_btn_less_than_one_year =    "//button[@data-id='1']"
 tag_txt_less_than_one_year =    "//li[@data-id='1']"
+
+tag_location =                  'facet-location'
+txt_fill_location =             'United State'
+tag_add_pills =                 'add-pills'
+tag_add_pills_btn =             'add-pills-btn'
+tag_location_hint =             "//p[contains(@title, 'United States')]"
 
 timeout =                       60
 
@@ -105,6 +116,26 @@ def _waitAddButtonLoaded(driver, left_rail, group, suggestion, button):
     try: 
         dr = WebDriverWait(driver, timeout)
         dr.until(lambda the_driver:the_driver.find_element_by_id(left_rail).find_element_by_id(group).find_element_by_class_name(suggestion).find_element_by_tag_name(button).is_displayed())
+    except:
+        return False
+
+    return True
+
+
+# ##################################################################################
+# @brief                Wait for location hint loaded
+#
+# @param driver         Current page
+# @param left_rail      Left rail area
+# @param group          Curren group area (sub facet)
+# @param path           The xpath of hint object
+# @return               Button loaded success or not
+# ##################################################################################
+
+def _waitLocationHintLoaded(driver, left_rail, group, path):
+    try: 
+        dr = WebDriverWait(driver, timeout)
+        dr.until(lambda the_driver:the_driver.find_element_by_id(left_rail).find_element_by_id(group).find_element_by_xpath(path).is_displayed())
     except:
         return False
 
@@ -204,12 +235,13 @@ class BrowserHandler:
 
     def filterYearsInCurrentCompany(self):
         # Click add button
-        self.mAdvLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
-        if(None == self.mAdvLeftRail):
+        driver = self.mDriver
+        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
             return False
 
         group_years_in_current_company = None
-        group_years_in_current_company = self.mAdvLeftRail.find_element_by_id(tag_years_in_current_company)
+        group_years_in_current_company = advLeftRail.find_element_by_id(tag_years_in_current_company)
         if(None == group_years_in_current_company):
             return False
 
@@ -219,17 +251,18 @@ class BrowserHandler:
             return False
 
         btn_years_in_current_comany.click()
-        if(False == _waitAddButtonLoaded(self.mDriver, tag_left_rail, tag_years_in_current_company, tag_suggestions, tag_add_button)):
+        if(False == _waitAddButtonLoaded(driver, tag_left_rail, tag_years_in_current_company, tag_suggestions, tag_add_button)):
             return False
 
         # Click first button
-        self.mAdvLeftRail = None
-        self.mAdvLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
-        if(None == self.mAdvLeftRail):
+        time.sleep(1)
+        advLeftRail = None
+        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
             return False
 
         group_years_in_current_company = None
-        group_years_in_current_company = self.mAdvLeftRail.find_element_by_id(tag_years_in_current_company)
+        group_years_in_current_company = advLeftRail.find_element_by_id(tag_years_in_current_company)
         if(None == group_years_in_current_company):
             return False
 
@@ -238,14 +271,97 @@ class BrowserHandler:
         if(None == group_suggestions):
             return False
 
+        btn_list = None
+        btn_list = group_suggestions.find_element_by_tag_name(tag_li)
+        if(None == btn_list):
+            return False
+
         btn_less_than_one_year = None
-        #btn_less_than_one_year = group_suggestions.find_element_by_xpath("//button[@data-id='1']")
-        btn_less_than_one_year = group_suggestions.find_element_by_xpath(tag_btn_less_than_one_year)
+        btn_less_than_one_year = btn_list.find_element_by_xpath(tag_btn_less_than_one_year)
         if(None == btn_less_than_one_year):
             return False
 
         btn_less_than_one_year.click()
-        if(False == _waitTextFilled(self.mDriver, tag_left_rail, tag_years_in_current_company, tag_txt_less_than_one_year)):
+        if(False == _waitTextFilled(driver, tag_left_rail, tag_years_in_current_company, tag_txt_less_than_one_year)):
             return False
 
         return True
+
+
+# ##################################################################################
+# @brief                Fill the filter "Locations"
+#
+# @return               Filled success or not
+# ##################################################################################
+
+    def filterLocation(self):
+        # Click add button
+        driver = self.mDriver
+        advLeftRail = None
+        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
+            return False
+
+        group_location = None
+        group_location = advLeftRail.find_element_by_id(tag_location)
+        if(None == group_location):
+            return False
+
+        btn_location = None
+        btn_location = group_location.find_element_by_class_name(tag_facet_wrapper).find_element_by_class_name(tag_add_pills).find_element_by_class_name(tag_add_pills_btn)
+        if(None == btn_location):
+            return False
+
+        btn_location.click()
+        time.sleep(1)
+
+        # Enter text form to trigger the hint
+        advLeftRail = None
+        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
+            return False
+
+        group_location = None
+        group_location = advLeftRail.find_element_by_id(tag_location)
+        if(None == group_location):
+            return False
+
+        form_location = None
+        form_location = group_location.find_element_by_tag_name(tag_form)
+        if(None == form_location):
+            return False
+        
+        action = webdriver.ActionChains(driver)
+        action.send_keys(txt_fill_location)
+        action.perform()
+        
+        if(False == _waitLocationHintLoaded(driver, tag_left_rail, tag_location, tag_location_hint)):
+            return False
+
+        # Click the hint (send "TAB" key)
+        advLeftRail = None
+        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
+            return False
+
+        group_location = None
+        group_location = advLeftRail.find_element_by_id(tag_location)
+        if(None == group_location):
+            return False
+
+        form_location = None
+        form_location = group_location.find_element_by_tag_name(tag_form)
+        if(None == form_location):
+            return False
+        
+        action = webdriver.ActionChains(driver)
+        action.send_keys(Keys.TAB)
+        action.perform()
+
+        return True
+
+
+
+
+
+
