@@ -17,8 +17,6 @@ import sys, csv, re, time, random, os
 # import local modules 
 import browserHandler as bh
 from browserHandler import BrowserHandler
-#import findCompany as fc
-#import companyInfo as ci
 import fileHandler as fh
 
 # ##################################################################################
@@ -29,11 +27,14 @@ import fileHandler as fh
 default_input_file =                        'company.csv'
 
 # Error Code
+SUCCESS =                                   0
 NO_COMPANY =                                -1
 LOGIN_LINKEDIN_HOME_PAGE_FAILED =           -2
 JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED =       -3
 FILL_LOCATION_FAILED =                      -4
-FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -5
+FILL_KEYWORDS_FAILED =                      -5
+FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -6
+CLICK_SEARCH_BUTTON_FAILED =                -7
 
 # Get input company file from local
 input_file = fh.getInputFile()
@@ -46,7 +47,8 @@ input_file_type = fh.parseInputFileType(input_file)
 
 # Get company list
 company_list = fh.parseInputFile(input_file_type, input_file)
-if(0 == len(company_list)):
+company_num = len(company_list)
+if(0 == company_num):
     print("No company in the list, exit...")
     sys.exit(NO_COMPANY)
 else:
@@ -75,12 +77,18 @@ else:
 
 # Fill location USA
 if(False == browser.filterLocation()):
-    print("Fill location failed. exit...")
+    print("Fill location failed, exit...")
     sys.exit(FILL_LOCATION_FAILED)
 else:
     print("Fill location succeed!")
 
-# Fill company name
+# Fill keywords 
+time.sleep(1)
+if(False == browser.filterKeywords(company_list[0])):
+    print("Fill keywords failed, exit...")
+    sys.exit(FILL_KEYWORDS_FAILED)
+else:
+    print("Fill keywords succeed!")
 
 # Fill years in current company
 time.sleep(1)
@@ -89,6 +97,14 @@ if(False == browser.filterYearsInCurrentCompany()):
     sys.exit(FILL_YEARS_IN_CURRENT_COMPANY_FAILED)
 else:
     print("Fill years in current company succeed!")
+
+# Click "Search" button
+time.sleep(1)
+if(False == browser.goAdvSearch()):
+    print("Click search button failed, exit...")
+    sys.exit(CLICK_SEARCH_BUTTON_FAILED)
+else:
+    print("Click search button succeed!")
 
 
 ## Find company addr
@@ -104,3 +120,5 @@ else:
 #    staff_link, next_page_flag = ci.parseStaffEntry(br, staff_link, staff_list)
 #    staff_link = linkedin_prefix + staff_link
 #    print (staff_list)
+
+sys.exit(SUCCESS)

@@ -41,6 +41,13 @@ txt_fill_location =             'United State'
 tag_add_pills =                 'add-pills'
 tag_add_pills_btn =             'add-pills-btn'
 tag_location_hint =             "//p[contains(@title, 'United States')]"
+tag_location_label =            "//li[contains(@title, 'United States')]"
+
+tag_keywords =                  'facet-keywords'
+tag_keywords_aria_label =           "//li[contains(@aria-label, 'Press backspace to delete selection')]"
+
+tag_search_hearder =            'all-facets-header'
+tag_search_go =                 'yes-btn'
 
 timeout =                       60
 
@@ -129,10 +136,31 @@ def _waitAddButtonLoaded(driver, left_rail, group, suggestion, button):
 # @param left_rail      Left rail area
 # @param group          Curren group area (sub facet)
 # @param path           The xpath of hint object
-# @return               Button loaded success or not
+# @return               Hint loaded success or not
 # ##################################################################################
 
 def _waitLocationHintLoaded(driver, left_rail, group, path):
+    try: 
+        dr = WebDriverWait(driver, timeout)
+        dr.until(lambda the_driver:the_driver.find_element_by_id(left_rail).find_element_by_id(group).find_element_by_xpath(path).is_displayed())
+    except:
+        return False
+
+    return True
+
+
+# ##################################################################################
+# @brief                Wait for location label loaded
+#
+# @param driver         Current page
+# @param left_rail      Left rail area
+# @param group          Curren group area (sub facet)
+# @param pill           Class pill
+# @param path           The xpath of label object
+# @return               Label loaded success or not
+# ##################################################################################
+
+def _waitLocationLabelLoaded(driver, left_rail, group, path):
     try: 
         dr = WebDriverWait(driver, timeout)
         dr.until(lambda the_driver:the_driver.find_element_by_id(left_rail).find_element_by_id(group).find_element_by_xpath(path).is_displayed())
@@ -357,11 +385,70 @@ class BrowserHandler:
         action = webdriver.ActionChains(driver)
         action.send_keys(Keys.TAB)
         action.perform()
+        
+        if(False == _waitLocationLabelLoaded(driver, tag_left_rail, tag_location, tag_location_label)):
+            return False
 
         return True
 
 
+# ##################################################################################
+# @brief                Fill the filter "Company"
+#
+# @param company_name   One of the names in the company list
+# @return               Filled success or not
+# ##################################################################################
+
+    def filterKeywords(self, company_name):
+        # Click add button
+        driver = self.mDriver
+        advLeftRail = None
+        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
+            return False
+
+        group_keywords = None
+        group_keywords = advLeftRail.find_element_by_id(tag_keywords)
+        if(None == group_keywords):
+            return False
+
+        btn_keywords = None
+        btn_keywords = group_keywords.find_element_by_class_name(tag_facet_wrapper).find_element_by_class_name(tag_add_pills).find_element_by_class_name(tag_add_pills_btn)
+        if(None == btn_keywords):
+            return False
+
+        btn_keywords.click()
+        time.sleep(1)
+
+        # Fill the company name
+        action = webdriver.ActionChains(driver)
+        action.send_keys(company_name + Keys.ENTER)
+        action.perform()
+
+        if(False == _waitLocationLabelLoaded(driver, tag_left_rail, tag_keywords, tag_keywords_aria_label)):
+            return False
+
+        return True
 
 
+# ##################################################################################
+# @brief                Click the "Search" button
+#
+# @return               Button clicked or not
+# ##################################################################################
+    def goAdvSearch(self):
+        driver = self.mDriver
 
+        header = None
+        header = driver.find_element_by_id(tag_search_hearder)
+        if(None == header):
+            return False
 
+        btn_search = None
+        btn_search = header.find_element_by_class_name(tag_search_go)
+        if(None == btn_search):
+            return False
+
+        btn_search.click()
+
+        return True
