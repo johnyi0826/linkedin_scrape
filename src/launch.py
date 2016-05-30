@@ -35,6 +35,8 @@ FILL_LOCATION_FAILED =                      -4
 FILL_KEYWORDS_FAILED =                      -5
 FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -6
 CLICK_SEARCH_BUTTON_FAILED =                -7
+PAGE_REFRESH_FAILED =                       -8
+CURRENT_PAGE_INFO_ERROR =                   -9
 
 # Get input company file from local
 input_file = fh.getInputFile()
@@ -106,6 +108,16 @@ if(False == browser.goAdvSearch()):
 else:
     print("Click search button succeed!")
 
+if(False == browser.waitPageRefresh()):
+    print("Page refresh failed, exit...")
+    sys.exit(PAGE_REFRESH_FAILED)
+
+time.sleep(2)
+info_page = {} 
+info_page = browser.getEmployerInfo(company_list[0])
+if(not info_page):
+    print("Current page info error, exit...")
+    sys.exit(CURRENT_PAGE_INFO_ERROR)
 
 ## Find company addr
 #com_link = fc.getAddress(br, company, bing_prefix)

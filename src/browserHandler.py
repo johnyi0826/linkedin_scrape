@@ -12,7 +12,8 @@
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
-import time
+from bs4 import BeautifulSoup
+import sys, csv, re, time, random, os
 
 # Constant var
 login_url =                     'https://www.linkedin.com/cap/dashboard/home?recruiterEntryPoint=true&trk=nav_responsive_sub_nav_upgrade'
@@ -29,6 +30,14 @@ tag_li =                        'li'
 tag_form =                      'form'
 tag_class =                     'class'
 tag_facet_wrapper =             'facet-wrapper'
+tag_ol =                        'ol'
+tag_div =                       'div'
+tag_p =                         'p'
+tag_a =                         'a'
+tag_h3 =                        'h3'
+tag_href =                      'href'
+tag_span =                      'span'
+tag_id =                        'id'
 
 tag_years_in_current_company =  'facet-yearsInCurrentCompany'
 tag_suggestions =               'suggestions'
@@ -48,6 +57,22 @@ tag_keywords_aria_label =           "//li[contains(@aria-label, 'Press backspace
 
 tag_search_hearder =            'all-facets-header'
 tag_search_go =                 'yes-btn'
+
+tag_search_result =             'search-result'
+tag_search_results =            'serach-results'
+tag_name =                      'name'
+tag_top_card =                  'top-card'
+tag_headline =                  'headline'
+tag_location_p =                'location'
+tag_pagelink =                  'pagelink'
+tag_data_range =                'data-range'
+
+profile_company =               'Company'
+profile_name =                  'Name'
+profile_link =                  'Link'
+profile_title =                 'Title'
+profile_location =              'Location'
+profile_period =                'Period'
 
 timeout =                       60
 
@@ -188,6 +213,21 @@ def _waitTextFilled(driver, left_rail, group, text):
         return False
 
     return True
+
+
+# ##################################################################################
+# @brief                Get the text field from the HTML section
+# @param text_variable  The tag of HTML section
+#
+# @return               Text info
+# ##################################################################################
+
+def get_text_from_tag(text_variable):	
+	try:
+		temp_variable = text_variable.text
+	except Exception:
+		temp_variable = ""
+	return temp_variable
 
 
 # ##################################################################################
@@ -436,6 +476,7 @@ class BrowserHandler:
 #
 # @return               Button clicked or not
 # ##################################################################################
+
     def goAdvSearch(self):
         driver = self.mDriver
 
@@ -452,3 +493,59 @@ class BrowserHandler:
         btn_search.click()
 
         return True
+
+
+# ##################################################################################
+# @brief                Wait for current page loaded
+#
+# @return               Refreshed or not
+# ##################################################################################
+
+    def waitPageRefresh(self):
+        with wait_for_page_load(self.mDriver):
+            return True
+        return False
+
+
+# ##################################################################################
+# @brief                Get the employers' info in current page
+#
+# @param company        Current company
+# @return               Employers' info
+# ##################################################################################
+
+    def getEmployerInfo(self, company):
+        profile_list= {}
+        profile_counter = 0
+
+        html = self.mDriver.page_source
+        soup = BeautifulSoup(html, 'html5lib')
+        print(soup)
+        search_results = soup.find("ol", { "id" : "search-results" })
+        employee_cards = search_results.findAll('li', { "class" : "search-result" })
+
+        for card in employee_cards:
+            profile = {}
+            top_card = card.find('div', {"class": "top-card"})
+            try:
+                name = get_text_from_tag(top_card.find_all('h3', {"class" : "name"})[0])
+                pagelink = (top_card.find_all('h3', {"class" : "name"})[0]).find('a')['href']
+            except Exception:
+                name = ""
+            try:
+                headline_title = get_text_from_tag(top_card.find_all('p', {"class" : "headline"})[0])
+            except Exception:
+                headline_title = ""
+            try:
+                location = get_text_from_tag(top_card.find_all('p', {"class" : "location"})[0])
+            except Exception:
+                location = ""
+
+            profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location] = company, name, pagelink, headline_title, location
+
+            profile_list[str(profile_counter)] = profile
+            profile_counter += 1
+
+            print(profile[profile_name])
+
+        return profile_list
