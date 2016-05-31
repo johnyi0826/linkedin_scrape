@@ -12,19 +12,27 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
-import sys, csv, re, time, random, os
+import sys, csv, re, time, random, os, platform
 
 # import local modules 
 import browserHandler as bh
 from browserHandler import BrowserHandler
 import fileHandler as fh
 
-# ##################################################################################
-# Main () 
-# ##################################################################################
-
 # Constant var
 default_input_file =                        'company.csv'
+default_output_file =                       'result.csv'
+
+profile_company =               'Company'
+profile_name =                  'Name'
+profile_link =                  'Link'
+profile_title =                 'Title'
+profile_location =              'Location'
+profile_period =                'Period'
+
+profile_fields =                [profile_company, profile_name, profile_link, profile_title, profile_location, profile_period]
+
+sys_windows =                   "Windows"
 
 # Error Code
 SUCCESS =                                   0
@@ -38,11 +46,38 @@ CLICK_SEARCH_BUTTON_FAILED =                -7
 PAGE_REFRESH_FAILED =                       -8
 CURRENT_PAGE_INFO_ERROR =                   -9
 
+
+# ##################################################################################
+# Main () 
+# ##################################################################################
+
+# Get system type
+current_system = platform.system()
+
 # Get input company file from local
+print("Please choose your input file. The output file will be in the same directory as the input file.")
 input_file = fh.getInputFile()
+# Open output file
+output_path = os.path.dirname(input_file)
 if (None == input_file):
     print("Did not get input file from dialog, use default file")
     input_file = default_input_file
+    output_path = "."
+
+# Open output file and write header
+output_filename = ""
+if(sys_windows == current_system):
+    output_file_name = output_path + "\\" + default_output_file
+else:
+    output_filename = output_path + "/" + default_output_file
+
+# If output file exist, rename it with "_bak" suffix
+if(True == os.path.exists(output_filename)):
+    os.rename(output_filename, output_filename + "_bak")
+
+fd = fh.openFile(output_filename)
+fw = fh.getFileWriter(fd, profile_fields)
+fh.writeFileHeader(fw)
 
 # Judge input file type
 input_file_type = fh.parseInputFileType(input_file)
@@ -56,6 +91,9 @@ if(0 == company_num):
 else:
     print("Found following companies:")
     print(company_list)
+
+# Open outputfile
+output_file = fh.openFile(output_filename)
 
 ##ToDo: Add a loop for all the companies 
 #company = 'AMERICAN ELECTRIC POWER CO'
@@ -112,25 +150,21 @@ if(False == browser.waitPageRefresh()):
     print("Page refresh failed, exit...")
     sys.exit(PAGE_REFRESH_FAILED)
 
-time.sleep(2)
-info_page = {} 
-info_page = browser.getEmployerInfo(company_list[0])
-if(not info_page):
-    print("Current page info error, exit...")
-    sys.exit(CURRENT_PAGE_INFO_ERROR)
+while(True):
+    time.sleep(2)
+    info_page = {} 
+    info_page = browser.getEmployerInfo(company_list[0])
+    if(not info_page):
+        print("Current page info error, exit...")
+        sys.exit(CURRENT_PAGE_INFO_ERROR)
 
-## Find company addr
-#com_link = fc.getAddress(br, company, bing_prefix)
-#
-## Find the employers' entries
-#staff_link = ci.getStaffEntry(br, com_link)
-#
-## Find employers and next page
-#next_page_flag = True # To enter the first loop, set flag = True
-#staff_list = []
-#while(True == next_page_flag):
-#    staff_link, next_page_flag = ci.parseStaffEntry(br, staff_link, staff_list)
-#    staff_link = linkedin_prefix + staff_link
-#    print (staff_list)
+    for x in range(len(info_page)):
+        fh.writeRow(fw, info_page[str(x)])
+
+    if(False == browser.clickNextPage()):
+        break
+
+# Close output file
+fh.closeFile(fd)
 
 sys.exit(SUCCESS)

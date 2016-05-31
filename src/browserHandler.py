@@ -75,6 +75,9 @@ profile_location =              'Location'
 profile_period =                'Period'
 
 timeout =                       60
+min_wait = 1 
+max_wait = 5 
+linkedin_prefix =               "www.linkedin.com"
 
 
 # ##################################################################################
@@ -520,7 +523,6 @@ class BrowserHandler:
 
         html = self.mDriver.page_source
         soup = BeautifulSoup(html, 'html5lib')
-        print(soup)
         search_results = soup.find("ol", { "id" : "search-results" })
         employee_cards = search_results.findAll('li', { "class" : "search-result" })
 
@@ -532,20 +534,66 @@ class BrowserHandler:
                 pagelink = (top_card.find_all('h3', {"class" : "name"})[0]).find('a')['href']
             except Exception:
                 name = ""
-            try:
-                headline_title = get_text_from_tag(top_card.find_all('p', {"class" : "headline"})[0])
-            except Exception:
-                headline_title = ""
+                pagelink = ""
+            pagelink  = linkedin_prefix + pagelink
+
             try:
                 location = get_text_from_tag(top_card.find_all('p', {"class" : "location"})[0])
             except Exception:
                 location = ""
 
-            profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location] = company, name, pagelink, headline_title, location
+            info_rows = card.find('div', {"class": "info"})
+            current_position_list = ""
+            current_period_list = ""
+            if(None != info_rows):
+                current_postions_container = info_rows.find('ol', {"aria-label": "Current positions"})
+                if(None != current_postions_container):
+                    current_positions = current_postions_container.findAll('li')
+                if(None != current_positions):
+                    for position in current_positions:
+                        date_range = position.find('span', {"class" : "date-range"})
+                        thedate = get_text_from_tag(date_range)
+                        if(None != date_range):
+                            date_range.replace_with('')
+                    position_text = get_text_from_tag(position)
+                    
+                    if("" == current_position_list):
+                        current_position_list += position_text
+                    else:
+                        current_position_list = current_position_list + "; " + position_text
+
+                    if("" == current_period_list):
+                        current_period_list += thedate
+                    else:
+                        current_period_list = current_period_list + "; " + thedate
+
+
+            profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = company, name, pagelink, current_position_list, location, current_period_list
 
             profile_list[str(profile_counter)] = profile
             profile_counter += 1
 
-            print(profile[profile_name])
-
         return profile_list
+
+
+# ##################################################################################
+# @brief                Click next page button
+#
+# @return               Clicked or no next page button
+# ##################################################################################
+
+    def clickNextPage(self):
+        pagination_nav = self.mDriver.find_element_by_id("pagination")
+        nextpagebutton = None
+        if(None != pagination_nav):
+            nextpagecontainer = pagination_nav.find_elements_by_class_name("next")
+            if(nextpagecontainer):
+                nextpagebutton = nextpagecontainer[0].find_element_by_tag_name("a")
+        if(None == nextpagebutton):
+            return False
+        nextpagebutton.click()
+        with wait_for_page_load(self.mDriver):
+            time.sleep(random.randint(min_wait, max_wait))
+            return True
+        return False
+

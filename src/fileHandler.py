@@ -77,3 +77,58 @@ def _parseCSVInputFile(file_name):
             company_list.append(conm)
         count += 1
     return company_list
+
+
+# ##################################################################################
+# @brief                Open file
+#
+# @param full_name      Full file name
+# @return               File Handler
+# ##################################################################################
+
+def openFile(full_name):
+    return open(full_name, 'a', encoding='utf-8')
+
+
+# ##################################################################################
+# @brief                Close file
+#
+# @param full_name      File Handler
+# @return               
+# ##################################################################################
+
+def closeFile(fd):
+    fd.close()
+
+# ##################################################################################
+# @brief                Get file writer
+#
+# @param full_name      File handler
+# @return               File writer
+# ##################################################################################
+
+def getFileWriter(fd, fields):
+    return csv.DictWriter(fd, fieldnames=fields, lineterminator='\n')
+
+
+# ##################################################################################
+# @brief                Write file header
+#
+# @param full_name      File Writer
+# @return               
+# ##################################################################################
+
+def writeFileHeader(fw):
+    fw.writeheader()
+
+
+
+# ##################################################################################
+# @brief                Write single line of a file
+#
+# @param full_name      File Writer
+# @return               
+# ##################################################################################
+
+def writeRow(fw, profile):
+    fw.writerow(profile)
