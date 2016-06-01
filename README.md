@@ -1,4 +1,4 @@
-1. Installation
+Installation
 
 Step 1:
 
@@ -6,7 +6,7 @@ Install Firefox:   https://www.mozilla.org/en-US/firefox/new/
 
 Install Python 3.5.1:  https://www.python.org/downloads/
 
-Strongly recommended install packages above from the listed linkes!
+Strongly recommended install packages above from the listed links!
 
 
 Step 2:
@@ -31,13 +31,15 @@ If you installed Python from Step 1, then do nothing
 If not (I think the easiest way is that go back to Step 1, but you can still find the solutions below):
 
 For Mac OS X, install port from https://www.macports.org/install.php, then type:
+
 sudo port -v selfupdate
+
 sudo port install py35-tkinter
 
 For Windows, install tkinter from https://wiki.python.org/moin/TkInter
 
 
-2. How to run
+How to run
 
 Step 1:
 
@@ -72,3 +74,5 @@ Sample input file is in the "sample" directory.
 Step 5:
 
 Leave the PC there and when the program finished, the output file "result.csv" will be in the same directory as the input file
+
+If there is more than one title for a person in current company, the the different info of "Title" and "Period" field will be divided by ";"

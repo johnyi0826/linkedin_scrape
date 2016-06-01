@@ -67,6 +67,7 @@ tag_location_p =                'location'
 tag_pagelink =                  'pagelink'
 tag_data_range =                'data-range'
 
+profile_keywords =              'Keywords'
 profile_company =               'Company'
 profile_name =                  'Name'
 profile_link =                  'Link'
@@ -81,14 +82,15 @@ linkedin_prefix =               "www.linkedin.com"
 
 
 # ##################################################################################
-# @brief                Wait function from http://www.obeythetestinggoat.com/how-to-get-selenium-to-wait-for-page-load-after-a-click.html
+# @brief                        Wait function from http://www.obeythetestinggoat.com/how-to-get-selenium-to-wait-for-page-load-after-a-click.html
 #
-# @return               Page loaded or not
+# @param condition_function     Callback function
+# @return                       Page loaded or not
 # ##################################################################################
 
 def _wait_for(condition_function):
     start_time = time.time()
-    while time.time() < start_time + 30:
+    while time.time() < start_time + 60:
         if condition_function():
             return True
         else:
@@ -117,6 +119,29 @@ class wait_for_page_load(object):
 	def __exit__(self, *_):
 		_wait_for(self.page_has_loaded)
 
+
+# ##################################################################################
+# @brief                Wait for page loaded
+#
+# @param browser        Current browser
+# @return               Page loaded success or not
+# ##################################################################################
+
+def _wait_for_next_page_loaded(browser):
+    start_time = time.time()
+    old_page = browser.find_element_by_tag_name('html')
+    old_url = browser.current_url
+    while time.time() < start_time + 60:
+        new_page = browser.find_element_by_tag_name('html')
+        new_url = browser.current_url
+        if(new_url != old_url):
+            return True
+        else:
+            time.sleep(0.1)
+    return False
+
+    
+                
 
 # ##################################################################################
 # @brief                Wait for page loaded
@@ -505,9 +530,10 @@ class BrowserHandler:
 # ##################################################################################
 
     def waitPageRefresh(self):
-        with wait_for_page_load(self.mDriver):
-            return True
-        return False
+        while(False == _wait_for_next_page_loaded(self.mDriver)):
+                time.sleep(1)
+                self.mDriver.refresh()
+        return True 
 
 
 # ##################################################################################
@@ -581,7 +607,7 @@ class BrowserHandler:
                             current_period_list = current_period_list + "; " + thedate
 
 
-            profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = current_company_list, name, pagelink, current_position_list, location, current_period_list
+            profile[profile_keywords], profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = company, current_company_list, name, pagelink, current_position_list, location, current_period_list
 
             profile_list[str(profile_counter)] = profile
             profile_counter += 1
@@ -605,10 +631,10 @@ class BrowserHandler:
         if(None == nextpagebutton):
             return False
         nextpagebutton.click()
-        with wait_for_page_load(self.mDriver):
-            time.sleep(random.randint(min_wait, max_wait))
-            return True
-        return False
+        while(False == _wait_for_next_page_loaded(self.mDriver)):
+                time.sleep(random.randint(min_wait, max_wait))
+                self.mDriver.refresh()
+        return True 
 
 
 # ##################################################################################

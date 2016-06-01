@@ -23,6 +23,7 @@ import fileHandler as fh
 default_input_file =                        'company.csv'
 default_output_file =                       'result.csv'
 
+profile_keywords =                          'Keywords'
 profile_company =                           'Company'
 profile_name =                              'Name'
 profile_link =                              'Link'
@@ -30,7 +31,7 @@ profile_title =                             'Title'
 profile_location =                          'Location'
 profile_period =                            'Period'
 
-profile_fields =                            [profile_company, profile_name, profile_link, profile_title, profile_location, profile_period]
+profile_fields =                            [profile_keywords, profile_company, profile_name, profile_link, profile_title, profile_location, profile_period]
 
 sys_windows =                               "Windows"
 
@@ -174,7 +175,7 @@ for i in range(company_num):
         print("Jump to home page failed, exit")
         sys.exit(JUMP_TO_HOME_PAGE_FAILED)
     else:
-        print("Current finished: " + str(i) + " of " + str(company_num))
+        print("Current finished: " + str(i + 1) + " of " + str(company_num))
         time.sleep(1)
 
 # Close output file
