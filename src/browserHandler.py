@@ -545,8 +545,11 @@ class BrowserHandler:
             info_rows = card.find('div', {"class": "info"})
             current_position_list = ""
             current_period_list = ""
+            current_company_list = ""
+            spliter = ' at '
             if(None != info_rows):
                 current_postions_container = info_rows.find('ol', {"aria-label": "Current positions"})
+                current_positions = None
                 if(None != current_postions_container):
                     current_positions = current_postions_container.findAll('li')
                 if(None != current_positions):
@@ -555,20 +558,30 @@ class BrowserHandler:
                         thedate = get_text_from_tag(date_range)
                         if(None != date_range):
                             date_range.replace_with('')
-                    position_text = get_text_from_tag(position)
-                    
-                    if("" == current_position_list):
-                        current_position_list += position_text
-                    else:
-                        current_position_list = current_position_list + "; " + position_text
+                        position_text = get_text_from_tag(position)
 
-                    if("" == current_period_list):
-                        current_period_list += thedate
-                    else:
-                        current_period_list = current_period_list + "; " + thedate
+                        # Get company name
+                        if(-1 != position_text.find(spliter)):
+                            if("" == current_company_list):
+                                current_company_list += position_text.split(spliter)[1]
+                            if("" == current_position_list):
+                                current_position_list += position_text.split(spliter)[0]
+                            else:
+                                current_company_list = current_company_list + "; " + position_text.split(spliter)[1]
+                                current_position_list = current_position_list + "; " + position_text.split(spliter)[0]
+                        else: 
+                            if("" == current_position_list):
+                                current_position_list += position_text
+                            else:
+                                current_position_list = current_position_list + "; " + position_text
+
+                        if("" == current_period_list):
+                            current_period_list += thedate
+                        else:
+                            current_period_list = current_period_list + "; " + thedate
 
 
-            profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = company, name, pagelink, current_position_list, location, current_period_list
+            profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = current_company_list, name, pagelink, current_position_list, location, current_period_list
 
             profile_list[str(profile_counter)] = profile
             profile_counter += 1
@@ -596,4 +609,22 @@ class BrowserHandler:
             time.sleep(random.randint(min_wait, max_wait))
             return True
         return False
+
+
+# ##################################################################################
+# @brief                Click recruiter home page button
+#
+# @return               Jumped to home page or not
+# ##################################################################################
+
+    def jumpToHomePage(self):
+        html = self.mDriver.page_source
+        soup = BeautifulSoup(html, 'html5lib')
+        home_page_container = soup.find("nav")
+        home_page_suffix = home_page_container.find("a", { "title" : "Recruiter" })
+        home_page_link = linkedin_prefix + home_page_suffix['href']
+
+        self.mDriver.get(home_page_link)
+        return _waitPageLoaded(self.mDriver, tag_home_page_search)
+
 

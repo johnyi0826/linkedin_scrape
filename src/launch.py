@@ -23,16 +23,16 @@ import fileHandler as fh
 default_input_file =                        'company.csv'
 default_output_file =                       'result.csv'
 
-profile_company =               'Company'
-profile_name =                  'Name'
-profile_link =                  'Link'
-profile_title =                 'Title'
-profile_location =              'Location'
-profile_period =                'Period'
+profile_company =                           'Company'
+profile_name =                              'Name'
+profile_link =                              'Link'
+profile_title =                             'Title'
+profile_location =                          'Location'
+profile_period =                            'Period'
 
-profile_fields =                [profile_company, profile_name, profile_link, profile_title, profile_location, profile_period]
+profile_fields =                            [profile_company, profile_name, profile_link, profile_title, profile_location, profile_period]
 
-sys_windows =                   "Windows"
+sys_windows =                               "Windows"
 
 # Error Code
 SUCCESS =                                   0
@@ -45,6 +45,7 @@ FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -6
 CLICK_SEARCH_BUTTON_FAILED =                -7
 PAGE_REFRESH_FAILED =                       -8
 CURRENT_PAGE_INFO_ERROR =                   -9
+JUMP_TO_HOME_PAGE_FAILED =                  -10
 
 
 # ##################################################################################
@@ -115,54 +116,65 @@ if(False == browser.jumpToAdvancedSearchPage()):
 else:
     print("Jump to advanced page succeed!")
 
-# Fill location USA
-if(False == browser.filterLocation()):
-    print("Fill location failed, exit...")
-    sys.exit(FILL_LOCATION_FAILED)
-else:
-    print("Fill location succeed!")
+# Start loop
+for i in range(company_num):
 
-# Fill keywords 
-time.sleep(1)
-if(False == browser.filterKeywords(company_list[0])):
-    print("Fill keywords failed, exit...")
-    sys.exit(FILL_KEYWORDS_FAILED)
-else:
-    print("Fill keywords succeed!")
-
-# Fill years in current company
-time.sleep(1)
-if(False == browser.filterYearsInCurrentCompany()):
-    print("Fill years in current company failed, exit...")
-    sys.exit(FILL_YEARS_IN_CURRENT_COMPANY_FAILED)
-else:
-    print("Fill years in current company succeed!")
-
-# Click "Search" button
-time.sleep(1)
-if(False == browser.goAdvSearch()):
-    print("Click search button failed, exit...")
-    sys.exit(CLICK_SEARCH_BUTTON_FAILED)
-else:
-    print("Click search button succeed!")
-
-if(False == browser.waitPageRefresh()):
-    print("Page refresh failed, exit...")
-    sys.exit(PAGE_REFRESH_FAILED)
-
-while(True):
-    time.sleep(2)
-    info_page = {} 
-    info_page = browser.getEmployerInfo(company_list[0])
-    if(not info_page):
-        print("Current page info error, exit...")
-        sys.exit(CURRENT_PAGE_INFO_ERROR)
-
-    for x in range(len(info_page)):
-        fh.writeRow(fw, info_page[str(x)])
-
-    if(False == browser.clickNextPage()):
-        break
+    # Fill location USA
+    if(False == browser.filterLocation()):
+        print("Fill location failed, exit...")
+        sys.exit(FILL_LOCATION_FAILED)
+    else:
+        print("Fill location succeed!")
+    
+    # Fill keywords 
+    time.sleep(1)
+    if(False == browser.filterKeywords(company_list[i])):
+        print("Fill keywords failed, exit...")
+        sys.exit(FILL_KEYWORDS_FAILED)
+    else:
+        print("Fill keywords succeed!")
+    
+    # Fill years in current company
+    time.sleep(1)
+    if(False == browser.filterYearsInCurrentCompany()):
+        print("Fill years in current company failed, exit...")
+        sys.exit(FILL_YEARS_IN_CURRENT_COMPANY_FAILED)
+    else:
+        print("Fill years in current company succeed!")
+    
+    # Click "Search" button
+    time.sleep(1)
+    if(False == browser.goAdvSearch()):
+        print("Click search button failed, exit...")
+        sys.exit(CLICK_SEARCH_BUTTON_FAILED)
+    else:
+        print("Click search button succeed!")
+    
+    if(False == browser.waitPageRefresh()):
+        print("Page refresh failed, exit...")
+        sys.exit(PAGE_REFRESH_FAILED)
+    
+    while(True):
+        time.sleep(2)
+        info_page = {} 
+        info_page = browser.getEmployerInfo(company_list[i])
+        if(not info_page):
+            print("Current page info error, exit...")
+            sys.exit(CURRENT_PAGE_INFO_ERROR)
+    
+        for x in range(len(info_page)):
+            fh.writeRow(fw, info_page[str(x)])
+    
+        if(False == browser.clickNextPage()):
+            break
+    
+    time.sleep(1)
+    if(False == browser.jumpToHomePage()):
+        print("Jump to home page failed, exit")
+        sys.exit(JUMP_TO_HOME_PAGE_FAILED)
+    else:
+        print("Current finished: " + str(i) + " of " + str(company_num))
+        time.sleep(1)
 
 # Close output file
 fh.closeFile(fd)
