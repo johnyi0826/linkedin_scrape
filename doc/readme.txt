@@ -29,3 +29,30 @@ sudo port -v selfupdate
 sudo port install py35-tkinter
 
 For Windows, install tkinter from https://wiki.python.org/moin/TkInter
+
+2. How to run
+
+Step 1:
+
+Disable the system automatic sleep, screensaver, screen dim and screen lock
+This is very important, since the program will simulate the mouse event
+
+Do NOT move or click the mouse while the program is running, just leave the PC there
+
+Step 2:
+
+For Windows, open a cmd window
+For Mac OS / Linux, open a shell terminal
+
+Step 3:
+
+Enter the "src" subdirector
+Type "python launch.py" or "python3.5 launch.py"
+
+Ste 4:
+
+When the program starts to run, there will be a windows pop up, select the input file.
+Sample input file is in the "sample" directory.
+
+Step 5:
+Leave the PC there and when the program finished, the output file "result.csv" will be in the same directory as the input file
