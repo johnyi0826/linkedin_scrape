@@ -68,7 +68,8 @@ if (None == input_file):
 # Open output file and write header
 output_filename = ""
 if(sys_windows == current_system):
-    output_file_name = output_path + "\\" + default_output_file
+    output_path = output_path.replace("/", "\\")
+    output_filename = output_path + "\\" + default_output_file
 else:
     output_filename = output_path + "/" + default_output_file
 
@@ -109,15 +110,15 @@ if(False  == browser.loginLinkedin()):
 else:
     print("Login LinkedIn recruiter home page succeed!")
 
-# Jump to advance search page
-if(False == browser.jumpToAdvancedSearchPage()):
-    print("Jump to advanced search page failed")
-    sys.exit(JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED)
-else:
-    print("Jump to advanced page succeed!")
-
 # Start loop
 for i in range(company_num):
+
+# Jump to advance search page
+    if(False == browser.jumpToAdvancedSearchPage()):
+        print("Jump to advanced search page failed")
+        sys.exit(JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED)
+    else:
+        print("Jump to advanced page succeed!")
 
     # Fill location USA
     if(False == browser.filterLocation()):
