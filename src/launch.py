@@ -23,6 +23,7 @@ import fileHandler as fh
 default_input_file =                        'company.csv'
 default_output_file =                       'result.csv'
 
+profile_origial_company =                   'Original Company from Input File'
 profile_keywords =                          'Keywords'
 profile_company =                           'Company'
 profile_name =                              'Name'
@@ -31,7 +32,7 @@ profile_title =                             'Title'
 profile_location =                          'Location'
 profile_period =                            'Period'
 
-profile_fields =                            [profile_keywords, profile_company, profile_name, profile_link, profile_title, profile_location, profile_period]
+profile_fields =                            [profile_origial_company, profile_keywords, profile_company, profile_name, profile_link, profile_title, profile_location, profile_period]
 
 sys_windows =                               "Windows"
 
@@ -42,11 +43,12 @@ LOGIN_LINKEDIN_HOME_PAGE_FAILED =           -2
 JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED =       -3
 FILL_LOCATION_FAILED =                      -4
 FILL_KEYWORDS_FAILED =                      -5
-FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -6
-CLICK_SEARCH_BUTTON_FAILED =                -7
-PAGE_REFRESH_FAILED =                       -8
-CURRENT_PAGE_INFO_ERROR =                   -9
-JUMP_TO_HOME_PAGE_FAILED =                  -10
+FILL_CURRENT_COMPANY_FAILED =               -6
+FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -7
+CLICK_SEARCH_BUTTON_FAILED =                -8
+PAGE_REFRESH_FAILED =                       -9
+CURRENT_PAGE_INFO_ERROR =                   -10
+JUMP_TO_HOME_PAGE_FAILED =                  -11
 
 
 # ##################################################################################
@@ -86,7 +88,7 @@ fh.writeFileHeader(fw)
 input_file_type = fh.parseInputFileType(input_file)
 
 # Get company list
-company_list = fh.parseInputFile(input_file_type, input_file)
+company_list, keywords_list = fh.parseInputFile(input_file_type, input_file)
 company_num = len(company_list)
 if(0 == company_num):
     print("No company in the list, exit...")
@@ -130,11 +132,19 @@ for i in range(company_num):
     
     # Fill keywords 
     time.sleep(1)
-    if(False == browser.filterKeywords(company_list[i])):
+    if(False == browser.filterKeywords(keywords_list[i])):
         print("Fill keywords failed, exit...")
         sys.exit(FILL_KEYWORDS_FAILED)
     else:
         print("Fill keywords succeed!")
+    
+    # Fill current company 
+    time.sleep(1)
+    if(False == browser.filterCurrentCompany(keywords_list[i])):
+        print("Fill current company failed, exit...")
+        sys.exit(FILL_CURRENT_COMPANY_FAILED)
+    else:
+        print("Fill current company succeed!")
     
     # Fill years in current company
     time.sleep(1)
@@ -159,7 +169,7 @@ for i in range(company_num):
     while(True):
         time.sleep(2)
         info_page = {} 
-        info_page = browser.getEmployerInfo(company_list[i])
+        info_page = browser.getEmployerInfo(company_list[i], keywords_list[i])
         if(not info_page):
             print("Current page info error, exit...")
             sys.exit(CURRENT_PAGE_INFO_ERROR)

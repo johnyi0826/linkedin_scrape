@@ -42,8 +42,8 @@ tag_id =                        'id'
 tag_years_in_current_company =  'facet-yearsInCurrentCompany'
 tag_suggestions =               'suggestions'
 tag_add_button =                'button'
-tag_btn_less_than_one_year =    "//button[@data-id='1']"
-tag_txt_less_than_one_year =    "//li[@data-id='1']"
+tag_btn_years =                 "//button[@data-id='3']"
+tag_txt_years =                 "//li[@data-id='3']"
 
 tag_location =                  'facet-location'
 txt_fill_location =             'United State'
@@ -53,7 +53,12 @@ tag_location_hint =             "//p[contains(@title, 'United States')]"
 tag_location_label =            "//li[contains(@title, 'United States')]"
 
 tag_keywords =                  'facet-keywords'
-tag_keywords_aria_label =           "//li[contains(@aria-label, 'Press backspace to delete selection')]"
+tag_keywords_aria_label =       "//li[contains(@aria-label, 'Press backspace to delete selection')]"
+
+
+tag_current_company =           'facet-currentCompany'
+tag_current_company_hint =      "//p[contains(@role, 'option')]"
+tag_current_company_label =     "//li[contains(@aria-label, 'Press backspace to delete selection.')]"
 
 tag_search_hearder =            'all-facets-header'
 tag_search_go =                 'yes-btn'
@@ -67,6 +72,7 @@ tag_location_p =                'location'
 tag_pagelink =                  'pagelink'
 tag_data_range =                'data-range'
 
+profile_origial_company =       'Original Company from Input File'
 profile_keywords =              'Keywords'
 profile_company =               'Company'
 profile_name =                  'Name'
@@ -373,12 +379,12 @@ class BrowserHandler:
             return False
 
         btn_less_than_one_year = None
-        btn_less_than_one_year = btn_list.find_element_by_xpath(tag_btn_less_than_one_year)
+        btn_less_than_one_year = btn_list.find_element_by_xpath(tag_btn_years)
         if(None == btn_less_than_one_year):
             return False
 
         btn_less_than_one_year.click()
-        if(False == _waitTextFilled(driver, tag_left_rail, tag_years_in_current_company, tag_txt_less_than_one_year)):
+        if(False == _waitTextFilled(driver, tag_left_rail, tag_years_in_current_company, tag_txt_years)):
             return False
 
         return True
@@ -461,7 +467,7 @@ class BrowserHandler:
 
 
 # ##################################################################################
-# @brief                Fill the filter "Company"
+# @brief                Fill the filter "Keywords" field
 #
 # @param company_name   One of the names in the company list
 # @return               Filled success or not
@@ -500,6 +506,83 @@ class BrowserHandler:
 
 
 # ##################################################################################
+# @brief                Fill the filter "Current Company" field
+#
+# @param company_name   One of the names in the company list
+# @return               Filled success or not
+# ##################################################################################
+    def filterCurrentCompany(self, company_name):
+        # Click add button
+        advLeftRail = None
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
+            return False
+
+        group_keywords = None
+        group_keywords = advLeftRail.find_element_by_id(tag_current_company)
+        if(None == group_keywords):
+            return False
+
+        btn_keywords = None
+        btn_keywords = group_keywords.find_element_by_class_name(tag_facet_wrapper).find_element_by_class_name(tag_add_pills).find_element_by_class_name(tag_add_pills_btn)
+        if(None == btn_keywords):
+            return False
+
+        btn_keywords.click()
+        time.sleep(1)
+
+        # Enter text form to trigger the hint
+        advLeftRail = None
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
+            return False
+
+        group_location = None
+        group_location = advLeftRail.find_element_by_id(tag_current_company)
+        if(None == group_location):
+            return False
+
+        form_location = None
+        form_location = group_location.find_element_by_tag_name(tag_form)
+        if(None == form_location):
+            return False
+        
+        action = webdriver.ActionChains(self.mDriver)
+        action.send_keys(company_name)
+        action.perform()
+        
+        if(False == _waitLocationHintLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_hint)):
+            return False
+
+        # Click the hint (send "TAB" key)
+        advLeftRail = None
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
+            return False
+
+        group_location = None
+        group_location = advLeftRail.find_element_by_id(tag_current_company)
+        if(None == group_location):
+            return False
+
+        form_location = None
+        form_location = group_location.find_element_by_tag_name(tag_form)
+        if(None == form_location):
+            return False
+        
+        action = webdriver.ActionChains(self.mDriver)
+        action.send_keys(Keys.TAB)
+        action.perform()
+        
+        if(False == _waitLocationLabelLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_label)):
+            return False
+
+        return True
+
+
+
+
+# ##################################################################################
 # @brief                Click the "Search" button
 #
 # @return               Button clicked or not
@@ -530,9 +613,10 @@ class BrowserHandler:
 # ##################################################################################
 
     def waitPageRefresh(self):
-        while(False == _wait_for_next_page_loaded(self.mDriver)):
+        if(False == _wait_for_next_page_loaded(self.mDriver)):
                 time.sleep(1)
                 self.mDriver.refresh()
+                time.sleep(1)
         return True 
 
 
@@ -543,7 +627,7 @@ class BrowserHandler:
 # @return               Employers' info
 # ##################################################################################
 
-    def getEmployerInfo(self, company):
+    def getEmployerInfo(self, company, keywords):
         profile_list= {}
         profile_counter = 0
 
@@ -607,7 +691,7 @@ class BrowserHandler:
                             current_period_list = current_period_list + "; " + thedate
 
 
-            profile[profile_keywords], profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = company, current_company_list, name, pagelink, current_position_list, location, current_period_list
+            profile[profile_origial_company], profile[profile_keywords], profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = company, keywords, current_company_list, name, pagelink, current_position_list, location, current_period_list
 
             profile_list[str(profile_counter)] = profile
             profile_counter += 1
@@ -631,9 +715,10 @@ class BrowserHandler:
         if(None == nextpagebutton):
             return False
         nextpagebutton.click()
-        while(False == _wait_for_next_page_loaded(self.mDriver)):
+        if(False == _wait_for_next_page_loaded(self.mDriver)):
                 time.sleep(random.randint(min_wait, max_wait))
                 self.mDriver.refresh()
+                time.sleep(random.randint(min_wait, max_wait))
         return True 
 
 

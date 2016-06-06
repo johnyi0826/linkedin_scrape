@@ -46,7 +46,7 @@ def parseInputFileType(filename):
 #
 # @param file_type      Input file type
 # @param file_name      Input file name
-# @return               Company list
+# @return               Company list, search keywords list
 # ##################################################################################
 
 def parseInputFile(file_type, file_name):
@@ -69,14 +69,17 @@ def parseInputFile(file_type, file_name):
 
 def _parseCSVInputFile(file_name):
     company_list = []
+    keywords_list = []
     count = 0
     for line in open(file_name):
-        gvkey, year, uai, logsale, pc_lg, pct1, pct2, group, conm = line.split(',')
+        gvkey, year, uai, conm, keyword = line.split(',')
         conm = conm.strip('\t\r\n')
+        keyword = keyword.strip('\t\r\n')
         if(0 != count):
             company_list.append(conm)
+            keywords_list.append(keyword)
         count += 1
-    return company_list
+    return company_list, keywords_list
 
 
 # ##################################################################################
