@@ -131,12 +131,12 @@ for i in range(company_num):
         print("Fill location succeed!")
     
     # Fill keywords 
-    time.sleep(1)
-    if(False == browser.filterKeywords(keywords_list[i])):
-        print("Fill keywords failed, exit...")
-        sys.exit(FILL_KEYWORDS_FAILED)
-    else:
-        print("Fill keywords succeed!")
+    #time.sleep(1)
+    #if(False == browser.filterKeywords(keywords_list[i])):
+    #    print("Fill keywords failed, exit...")
+    #    sys.exit(FILL_KEYWORDS_FAILED)
+    #else:
+    #    print("Fill keywords succeed!")
     
     # Fill current company 
     time.sleep(1)
