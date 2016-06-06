@@ -554,7 +554,7 @@ class BrowserHandler:
         if(False == _waitLocationHintLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_hint)):
             return False
 
-        # Click the hint (send "TAB" key)
+        # Click the hint (send "Arrown Down" key and "Enter" key)
         advLeftRail = None
         advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
         if(None == advLeftRail):
@@ -571,7 +571,7 @@ class BrowserHandler:
             return False
         
         action = webdriver.ActionChains(self.mDriver)
-        action.send_keys(Keys.TAB)
+        action.send_keys(Keys.ARROW_DOWN + Keys.ENTER)
         action.perform()
         
         if(False == _waitLocationLabelLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_label)):
