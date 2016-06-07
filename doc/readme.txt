@@ -23,8 +23,9 @@ pip install slugify
 
 pip install unicode-slugify
 
-These can be installed via pip: `pip install -r requirements.txt`
+These can be installed via pip command: "pip install -r requirements.txt"
 
+You may need root (Linux/Mac) or administrator(Windows) privilege to install the packages.
 
 Step 3:
 
