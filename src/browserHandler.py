@@ -14,6 +14,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 import sys, csv, re, time, random, os
+from slugify import slugify
+
 
 # Constant var
 login_url =                     'https://www.linkedin.com/cap/dashboard/home?recruiterEntryPoint=true&trk=nav_responsive_sub_nav_upgrade'
@@ -72,13 +74,15 @@ tag_location_p =                'location'
 tag_pagelink =                  'pagelink'
 tag_data_range =                'data-range'
 
+profile_number =                'Count'
 profile_origial_company =       'Original Company from Input File'
 profile_keywords =              'Keywords'
 profile_company =               'Company'
+profile_is_current =            'Is Current'
 profile_name =                  'Name'
 profile_link =                  'Link'
 profile_title =                 'Title'
-profile_location =              'Location'
+profile_location =              'Current Location'
 profile_period =                'Period'
 
 timeout =                       60
@@ -272,8 +276,7 @@ def get_text_from_tag(text_variable):
 
 class BrowserHandler:
     mDriver = None
-    mAdvLeftRail = None
-
+    mCounter = 0
 
 # ##################################################################################
 # @brief                Constructor, open FireFox to initial the browser handler 
@@ -337,8 +340,7 @@ class BrowserHandler:
 
     def filterYearsInCurrentCompany(self):
         # Click add button
-        driver = self.mDriver
-        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
         if(None == advLeftRail):
             return False
 
@@ -353,13 +355,13 @@ class BrowserHandler:
             return False
 
         btn_years_in_current_comany.click()
-        if(False == _waitAddButtonLoaded(driver, tag_left_rail, tag_years_in_current_company, tag_suggestions, tag_add_button)):
+        if(False == _waitAddButtonLoaded(self.mDriver, tag_left_rail, tag_years_in_current_company, tag_suggestions, tag_add_button)):
             return False
 
         # Click first button
         time.sleep(1)
         advLeftRail = None
-        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
         if(None == advLeftRail):
             return False
 
@@ -384,7 +386,7 @@ class BrowserHandler:
             return False
 
         btn_less_than_one_year.click()
-        if(False == _waitTextFilled(driver, tag_left_rail, tag_years_in_current_company, tag_txt_years)):
+        if(False == _waitTextFilled(self.mDriver, tag_left_rail, tag_years_in_current_company, tag_txt_years)):
             return False
 
         return True
@@ -398,9 +400,8 @@ class BrowserHandler:
 
     def filterLocation(self):
         # Click add button
-        driver = self.mDriver
         advLeftRail = None
-        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
         if(None == advLeftRail):
             return False
 
@@ -419,7 +420,7 @@ class BrowserHandler:
 
         # Enter text form to trigger the hint
         advLeftRail = None
-        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
         if(None == advLeftRail):
             return False
 
@@ -433,16 +434,16 @@ class BrowserHandler:
         if(None == form_location):
             return False
         
-        action = webdriver.ActionChains(driver)
+        action = webdriver.ActionChains(self.mDriver)
         action.send_keys(txt_fill_location)
         action.perform()
         
-        if(False == _waitLocationHintLoaded(driver, tag_left_rail, tag_location, tag_location_hint)):
+        if(False == _waitLocationHintLoaded(self.mDriver, tag_left_rail, tag_location, tag_location_hint)):
             return False
 
         # Click the hint (send "TAB" key)
         advLeftRail = None
-        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
         if(None == advLeftRail):
             return False
 
@@ -456,11 +457,11 @@ class BrowserHandler:
         if(None == form_location):
             return False
         
-        action = webdriver.ActionChains(driver)
+        action = webdriver.ActionChains(self.mDriver)
         action.send_keys(Keys.TAB)
         action.perform()
         
-        if(False == _waitLocationLabelLoaded(driver, tag_left_rail, tag_location, tag_location_label)):
+        if(False == _waitLocationLabelLoaded(self.mDriver, tag_left_rail, tag_location, tag_location_label)):
             return False
 
         return True
@@ -475,9 +476,8 @@ class BrowserHandler:
 
     def filterKeywords(self, company_name):
         # Click add button
-        driver = self.mDriver
         advLeftRail = None
-        advLeftRail = driver.find_element_by_id(tag_left_rail)
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
         if(None == advLeftRail):
             return False
 
@@ -495,11 +495,11 @@ class BrowserHandler:
         time.sleep(1)
 
         # Fill the company name
-        action = webdriver.ActionChains(driver)
+        action = webdriver.ActionChains(self.mDriver)
         action.send_keys(company_name + Keys.ENTER)
         action.perform()
 
-        if(False == _waitLocationLabelLoaded(driver, tag_left_rail, tag_keywords, tag_keywords_aria_label)):
+        if(False == _waitLocationLabelLoaded(self.mDriver, tag_left_rail, tag_keywords, tag_keywords_aria_label)):
             return False
 
         return True
@@ -589,10 +589,8 @@ class BrowserHandler:
 # ##################################################################################
 
     def goAdvSearch(self):
-        driver = self.mDriver
-
         header = None
-        header = driver.find_element_by_id(tag_search_hearder)
+        header = self.mDriver.find_element_by_id(tag_search_hearder)
         if(None == header):
             return False
 
@@ -637,7 +635,8 @@ class BrowserHandler:
         employee_cards = search_results.findAll('li', { "class" : "search-result" })
 
         for card in employee_cards:
-            profile = {}
+            self.mCounter += 1
+            is_current = True
             top_card = card.find('div', {"class": "top-card"})
             try:
                 name = get_text_from_tag(top_card.find_all('h3', {"class" : "name"})[0])
@@ -652,18 +651,26 @@ class BrowserHandler:
             except Exception:
                 location = ""
 
+            current_postions_container = None
+            current_positions = None
+            past_positions_container = None
+            past_positions = None
+
             info_rows = card.find('div', {"class": "info"})
-            current_position_list = ""
-            current_period_list = ""
-            current_company_list = ""
             spliter = ' at '
             if(None != info_rows):
+                # Current Company
                 current_postions_container = info_rows.find('ol', {"aria-label": "Current positions"})
-                current_positions = None
                 if(None != current_postions_container):
                     current_positions = current_postions_container.findAll('li')
                 if(None != current_positions):
+                    is_current = True
                     for position in current_positions:
+                        profile = {}
+                        current_position = ""
+                        current_period = ""
+                        current_company = ""
+
                         date_range = position.find('span', {"class" : "date-range"})
                         thedate = get_text_from_tag(date_range)
                         if(None != date_range):
@@ -672,29 +679,51 @@ class BrowserHandler:
 
                         # Get company name
                         if(-1 != position_text.find(spliter)):
-                            if("" == current_company_list):
-                                current_company_list += position_text.split(spliter)[1]
-                            if("" == current_position_list):
-                                current_position_list += position_text.split(spliter)[0]
-                            else:
-                                current_company_list = current_company_list + "; " + position_text.split(spliter)[1]
-                                current_position_list = current_position_list + "; " + position_text.split(spliter)[0]
+                                current_company += position_text.split(spliter)[1]
+                                current_position += position_text.split(spliter)[0]
                         else: 
-                            if("" == current_position_list):
-                                current_position_list += position_text
-                            else:
-                                current_position_list = current_position_list + "; " + position_text
+                                current_position += position_text
 
-                        if("" == current_period_list):
-                            current_period_list += thedate
-                        else:
-                            current_period_list = current_period_list + "; " + thedate
+                        current_period += thedate
+                        current_period = slugify(current_period)
 
+                        profile[profile_number], profile[profile_origial_company], profile[profile_is_current], profile[profile_keywords], profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = self.mCounter, company, is_current, keywords, current_company, name, pagelink, current_position, location, current_period
 
-            profile[profile_origial_company], profile[profile_keywords], profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = company, keywords, current_company_list, name, pagelink, current_position_list, location, current_period_list
+                        profile_list[str(profile_counter)] = profile
+                        profile_counter += 1
 
-            profile_list[str(profile_counter)] = profile
-            profile_counter += 1
+                # Past Companies
+                past_positions_container = info_rows.find('ol', {"aria-label": "Past positions"})
+                if(None != past_positions_container):
+                    past_positions = past_positions_container.findAll('li')
+                if(None != past_positions):
+                    is_current = False
+                    for position in past_positions:
+                        profile = {}
+                        past_position = ""
+                        past_period = ""
+                        past_company = ""
+
+                        date_range = position.find('span', {"class" : "date-range"})
+                        thedate = get_text_from_tag(date_range)
+                        if(None != date_range):
+                            date_range.replace_with('')
+                        position_text = get_text_from_tag(position)
+                        
+                        # Get company name
+                        if(-1 != position_text.find(spliter)):
+                                past_company += position_text.split(spliter)[1]
+                                past_position += position_text.split(spliter)[0]
+                        else: 
+                                past_position += position_text
+
+                        past_period += thedate
+                        past_period = slugify(past_period)
+
+                        profile[profile_number], profile[profile_origial_company], profile[profile_is_current], profile[profile_keywords], profile[profile_company], profile[profile_name], profile[profile_link], profile[profile_title], profile[profile_location], profile[profile_period] = self.mCounter, company, is_current, keywords, past_company, name, pagelink, past_position, location, past_period
+
+                        profile_list[str(profile_counter)] = profile
+                        profile_counter += 1
 
         return profile_list
 

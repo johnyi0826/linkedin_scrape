@@ -19,6 +19,10 @@ pip install beautifulsoup4
 
 pip install html5lib
 
+pip install slugify
+
+pip install unicode-slugify
+
 These can be installed via pip: `pip install -r requirements.txt`
 
 
@@ -69,6 +73,8 @@ Step 4:
 When the program starts to run, there will be a windows pop up, select the input file.
 
 Sample input file is in the "sample" directory.
+
+Output file is named "result.csv". If you already have a file named this, it will change the original file name to "result.csv_bak".
 
 
 Step 5:

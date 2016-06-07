@@ -23,16 +23,18 @@ import fileHandler as fh
 default_input_file =                        'company.csv'
 default_output_file =                       'result.csv'
 
+profile_number =                            'Count'
 profile_origial_company =                   'Original Company from Input File'
 profile_keywords =                          'Keywords'
 profile_company =                           'Company'
+profile_is_current =                        'Is Current'
 profile_name =                              'Name'
 profile_link =                              'Link'
 profile_title =                             'Title'
-profile_location =                          'Location'
+profile_location =                          'Current Location'
 profile_period =                            'Period'
 
-profile_fields =                            [profile_origial_company, profile_keywords, profile_company, profile_name, profile_link, profile_title, profile_location, profile_period]
+profile_fields =                            [profile_number, profile_origial_company, profile_keywords, profile_company, profile_is_current, profile_name, profile_link, profile_title, profile_location, profile_period]
 
 sys_windows =                               "Windows"
 
