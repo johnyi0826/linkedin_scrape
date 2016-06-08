@@ -41,6 +41,8 @@ tag_href =                      'href'
 tag_span =                      'span'
 tag_id =                        'id'
 
+tag_search_results_region =     'search-results-region'
+
 tag_years_in_current_company =  'facet-yearsInCurrentCompany'
 tag_suggestions =               'suggestions'
 tag_add_button =                'button'
@@ -746,8 +748,11 @@ class BrowserHandler:
         nextpagebutton.click()
         if(False == _wait_for_next_page_loaded(self.mDriver)):
                 time.sleep(random.randint(min_wait, max_wait))
-                self.mDriver.refresh()
-                time.sleep(random.randint(min_wait, max_wait))
+                while(True): # Protect link down
+                    self.mDriver.refresh()
+                    time.sleep(random.randint(min_wait, max_wait))
+                    if(True == _waitPageLoaded(self.mDriver, tag_search_results_region)):
+                        break
         return True 
 
 
