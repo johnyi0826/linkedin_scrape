@@ -576,8 +576,10 @@ class BrowserHandler:
         action.send_keys(Keys.ARROW_DOWN + Keys.ENTER)
         action.perform()
         
-        if(False == _waitLocationLabelLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_label)):
-            return False
+        while(False == _waitLocationLabelLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_label)):
+            print("Something wrong happened with company" + company_name + ", You can input manually")
+            time.sleep(1)
+            #return False
 
         return True
 
