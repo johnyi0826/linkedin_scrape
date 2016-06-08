@@ -173,8 +173,9 @@ for i in range(company_num):
         info_page = {} 
         info_page = browser.getEmployerInfo(company_list[i], keywords_list[i])
         if(not info_page):
-            print("Current page info error, exit...")
-            sys.exit(CURRENT_PAGE_INFO_ERROR)
+            print("No candidite, break...")
+            #sys.exit(CURRENT_PAGE_INFO_ERROR)
+            break
     
         for x in range(len(info_page)):
             fh.writeRow(fw, info_page[str(x)])
