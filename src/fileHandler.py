@@ -156,4 +156,4 @@ def writeRow(fw, profile):
 # ##################################################################################
 
 def writeLogRow(fd, txt):
-    fd.writer(txt + "\n")
+    fd.write(txt + "\n")
