@@ -643,7 +643,11 @@ class BrowserHandler:
             return 0
 
         num_str = get_text_from_tag(count)
-        num = int(num_str.replace(',', ''))
+        num = 0
+        if ',' in num_str:
+            num = int(num_str.replace(',', ''))
+        else:
+            num = int(num_str)
         if(1000 < num):
             return num
 
