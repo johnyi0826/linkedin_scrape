@@ -208,5 +208,5 @@ fh.writeLogRow(log_fd, "Finished successfully")
 fh.closeFile(fd)
 fh.closeFile(log_fd)
 
-printf("Scrape prgrogram finished success!")
+print("Scrape prgrogram finished success!")
 sys.exit(SUCCESS)
