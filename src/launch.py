@@ -185,6 +185,7 @@ for i in range(company_num):
         info_page = browser.getEmployerInfo(company_list[i], keywords_list[i])
         if(not info_page):
             print("No candidite, break...")
+            fh.writeLogRow(log_fd, "Company: " + company_list[i] + " has no candidates.")
             #sys.exit(CURRENT_PAGE_INFO_ERROR)
             break
     
