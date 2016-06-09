@@ -75,6 +75,7 @@ def _parseCSVInputFile(file_name):
         gvkey, year, uai, conm, keyword = line.split(',')
         conm = conm.strip('\t\r\n')
         keyword = keyword.strip('\t\r\n')
+        keyword = keyword.strip()
         if(0 != count):
             company_list.append(conm)
             keywords_list.append(keyword)
