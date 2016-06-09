@@ -90,7 +90,7 @@ fw = fh.getFileWriter(fd, profile_fields)
 fh.writeFileHeader(fw)
 
 log_fd = fh.openLogFile(output_log_file)
-fh.writeLogRow("Start program")
+fh.writeLogRow(log_fd, "Start program")
 
 # Judge input file type
 input_file_type = fh.parseInputFileType(input_file)
@@ -177,7 +177,7 @@ for i in range(company_num):
     # Is limitation?
     total_candidates = browser.isLimitation()
     if(0 != total_candidates):
-        fh.writeLogRow("Company: " + company_list[i] + " has reached limitation, total: " + str(total_candidates) + " candidates.")
+        fh.writeLogRow(log_fd, "Company: " + company_list[i] + " has reached limitation, total: " + str(total_candidates) + " candidates.")
     
     while(True):
         time.sleep(2)
@@ -202,7 +202,7 @@ for i in range(company_num):
         print("Current finished: " + str(i + 1) + " of " + str(company_num))
         time.sleep(1)
 
-fh.writeLogRow("Finished successfully")
+fh.writeLogRow(log_fd, "Finished successfully")
 # Close output file
 fh.closeFile(fd)
 fh.closeFile(log_fd)
