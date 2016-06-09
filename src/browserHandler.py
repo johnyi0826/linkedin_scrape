@@ -43,6 +43,11 @@ tag_id =                        'id'
 
 tag_search_results_region =     'search-results-region'
 
+tag_talent_pools_outlet =       'talent-pools-outlet'
+tag_talent_pools_region =       'talent-pools-region'
+tag_total =                     'total'
+tag_count =                     'count'
+
 tag_years_in_current_company =  'facet-yearsInCurrentCompany'
 tag_suggestions =               'suggestions'
 tag_add_button =                'button'
@@ -579,7 +584,7 @@ class BrowserHandler:
         action.perform()
         
         while(False == _waitLocationLabelLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_label)):
-            print("Something wrong happened with company" + company_name + ", You can input manually")
+            print("Something wrong happened with company: " + company_name + ", You can input manually")
             time.sleep(1)
             #return False
 
@@ -608,6 +613,41 @@ class BrowserHandler:
         btn_search.click()
 
         return True
+
+
+# ##################################################################################
+# @brief                Whether there are more than 1000 results? Since LinkedIn
+#                       has a limitation, up to 1000 results can be displayed
+#
+# @return               No more than 1000: 0    More than 1000: real number 
+# ##################################################################################
+    def isLimitation(self):
+        outlet = None
+        outlet = self.mDriver.find_element_by_id(tag_talent_pools_outlet)
+        if(None == outlet):
+            return 0
+
+        region = None
+        region = outlet.find_element_by_id(tag_talent_pools_region)
+        if(None == region):
+            return 0
+
+        tab = None
+        tab = region.find_element_by_id(tag_total)
+        if(None == tab):
+            return 0
+
+        count = None
+        count = tab.find_element_by_class_name(tag_count)
+        if(None == count):
+            return 0
+
+        num_str = get_text_from_tag(count)
+        num = int(num_str.strip(','))
+        if(1000 < num):
+            return num
+
+        return 0
 
 
 # ##################################################################################

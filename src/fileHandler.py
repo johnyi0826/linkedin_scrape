@@ -94,6 +94,17 @@ def openFile(full_name):
 
 
 # ##################################################################################
+# @brief                Open log file
+#
+# @param full_name      Full file name
+# @return               File Handler
+# ##################################################################################
+
+def openLogFile(full_name):
+    return open(full_name, 'w', encoding='utf-8')
+
+
+# ##################################################################################
 # @brief                Close file
 #
 # @param full_name      File Handler
@@ -117,7 +128,7 @@ def getFileWriter(fd, fields):
 # ##################################################################################
 # @brief                Write file header
 #
-# @param full_name      File Writer
+# @param full_name      File writer
 # @return               
 # ##################################################################################
 
@@ -129,9 +140,20 @@ def writeFileHeader(fw):
 # ##################################################################################
 # @brief                Write single line of a file
 #
-# @param full_name      File Writer
+# @param full_name      File writer
 # @return               
 # ##################################################################################
 
 def writeRow(fw, profile):
     fw.writerow(profile)
+
+
+# ##################################################################################
+# @brief                Write single line of a log file
+#
+# @param full_name      File handler 
+# @return               
+# ##################################################################################
+
+def writeLogRow(fd, txt):
+    fd.writer(txt + "\n")

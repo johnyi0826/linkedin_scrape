@@ -22,6 +22,7 @@ import fileHandler as fh
 # Constant var
 default_input_file =                        'company.csv'
 default_output_file =                       'result.csv'
+default_log_file =                          'log.txt'
 
 profile_number =                            'Count'
 profile_origial_company =                   'Original Company from Input File'
@@ -72,11 +73,13 @@ if (None == input_file):
 
 # Open output file and write header
 output_filename = ""
+output_log_file = ""
 if(sys_windows == current_system):
     output_path = output_path.replace("/", "\\")
     output_filename = output_path + "\\" + default_output_file
+    output_log_file = output_path + "\\" + default_log_file
 else:
-    output_filename = output_path + "/" + default_output_file
+    output_log_file = output_path + "/" + default_log_file
 
 # If output file exist, rename it with "_bak" suffix
 if(True == os.path.exists(output_filename)):
@@ -85,6 +88,9 @@ if(True == os.path.exists(output_filename)):
 fd = fh.openFile(output_filename)
 fw = fh.getFileWriter(fd, profile_fields)
 fh.writeFileHeader(fw)
+
+log_fd = fh.openLogFile(output_log_file)
+fh.writeLogRow("Start program")
 
 # Judge input file type
 input_file_type = fh.parseInputFileType(input_file)
@@ -167,6 +173,11 @@ for i in range(company_num):
     if(False == browser.waitPageRefresh()):
         print("Page refresh failed, exit...")
         sys.exit(PAGE_REFRESH_FAILED)
+
+    # Is limitation?
+    total_candidates = browser.isLimitation()
+    if(0 != total_candidates):
+        fh.writeLogRow("Company: " + company_list[i] + " has reached limitation, total: " + str(total_candidates) + " candidates.")
     
     while(True):
         time.sleep(2)
@@ -191,7 +202,10 @@ for i in range(company_num):
         print("Current finished: " + str(i + 1) + " of " + str(company_num))
         time.sleep(1)
 
+fh.writeLogRow("Finished successfully")
 # Close output file
 fh.closeFile(fd)
+fh.closeFile(log_fd)
 
+printf("Scrape prgrogram finished success!")
 sys.exit(SUCCESS)
