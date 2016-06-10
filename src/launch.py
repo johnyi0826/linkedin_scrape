@@ -157,7 +157,8 @@ for i in range(company_num):
     if(False == browser.filterCurrentCompany(keywords_list[i])):
         print("Fill current company failed")
         #sys.exit(FILL_CURRENT_COMPANY_FAILED)
-        tmp = input("You can manually input current company: ", + keywords_list[i])
+        print("Company: " + keywords_list[i])
+        tmp = input("You can manually input current company")
         time.sleep(2)
     else:
         print("Fill current company succeed!")
@@ -225,7 +226,8 @@ for i in range(company_num):
             if(False == browser.filterCurrentCompany(keywords_list[i])):
                 print("Fill current company failed")
                 #sys.exit(FILL_CURRENT_COMPANY_FAILED)
-                tmp = input("You can manually input current company: ", + keywords_list[i])
+                print("Company: " + keywords_list[i])
+                tmp = input("You can manually input current company")
                 time.sleep(2)
             else:
                 print("Fill current company succeed!")
@@ -244,7 +246,8 @@ for i in range(company_num):
             if(False == browser.filterYearsInCurrentPosition(k)):
                 print("Fill years in current position failed, id = " + str(k))
                 #sys.exit(FILL_YEARS_IN_CURRENT_POSITION_FAILED)
-                tmp = input("You can manually input years in current position, id = ", + str(k))
+                print("id = ", + str(k))
+                tmp = input("You can manually input years in current position")
                 time.sleep(2)
 
             # Click "Search" button
