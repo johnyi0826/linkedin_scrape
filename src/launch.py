@@ -129,14 +129,20 @@ for i in range(company_num):
     # Jump to advance search page
     if(False == browser.jumpToAdvancedSearchPage()):
         print("Jump to advanced search page failed")
-        sys.exit(JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED)
+        #sys.exit(JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED)
+        while(True):
+            print("You can manually click advance search button")
+            time.sleep(5)
     else:
         print("Jump to advanced page succeed!")
 
     # Fill location USA
     if(False == browser.filterLocation()):
         print("Fill location failed, exit...")
-        sys.exit(FILL_LOCATION_FAILED)
+        #sys.exit(FILL_LOCATION_FAILED)
+        while(True):
+            print("You can manually fill location")
+            time.sleep(5)
     else:
         print("Fill location succeed!")
     
@@ -151,30 +157,42 @@ for i in range(company_num):
     # Fill current company 
     time.sleep(1)
     if(False == browser.filterCurrentCompany(keywords_list[i])):
-        print("Fill current company failed, exit...")
-        sys.exit(FILL_CURRENT_COMPANY_FAILED)
+        print("Fill current company failed")
+        #sys.exit(FILL_CURRENT_COMPANY_FAILED)
+        while(True):
+            print("You can manually input current company: ", + keywords_list[i])
+            time.sleep(5)
     else:
         print("Fill current company succeed!")
     
     # Fill years in current company
     time.sleep(1)
     if(False == browser.filterYearsInCurrentCompany()):
-        print("Fill years in current company failed, exit...")
-        sys.exit(FILL_YEARS_IN_CURRENT_COMPANY_FAILED)
+        print("Fill years in current company failed")
+        #sys.exit(FILL_YEARS_IN_CURRENT_COMPANY_FAILED)
+        while(True):
+            print("You can manually fill years in current company")
+            time.sleep(5)
     else:
         print("Fill years in current company succeed!")
     
     # Click "Search" button
     time.sleep(1)
     if(False == browser.goAdvSearch()):
-        print("Click search button failed, exit...")
-        sys.exit(CLICK_SEARCH_BUTTON_FAILED)
+        print("Click search button failed")
+        #sys.exit(CLICK_SEARCH_BUTTON_FAILED)
+        while(True):
+            print("You can manually click advance search button")
+            time.sleep(5)
     else:
         print("Click search button succeed!")
     
     if(False == browser.waitPageRefresh()):
-        print("Page refresh failed, exit...")
-        sys.exit(PAGE_REFRESH_FAILED)
+        print("Page refresh failed")
+        #sys.exit(PAGE_REFRESH_FAILED)
+        while(True):
+            print("You can manually refresh page")
+            time.sleep(5)
 
     # Is limitation?
     total_candidates = browser.isLimitation()
@@ -186,54 +204,79 @@ for i in range(company_num):
 
             # Jump to advance search page
             if(False == browser.jumpToHomePage()):
-                print("Jump to home page failed, exit")
-                sys.exit(JUMP_TO_HOME_PAGE_FAILED)
+                print("Jump to home page failed")
+                #sys.exit(JUMP_TO_HOME_PAGE_FAILED)
+                while(True):
+                    print("You can manually jump to home page")
+                    time.sleep(5)
 
             if(False == browser.jumpToAdvancedSearchPage()):
                 print("Jump to advanced search page failed")
-                sys.exit(JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED)
+                #sys.exit(JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED)
+                while(True):
+                    print("You can manually click advance search button")
+                    time.sleep(5)
             else:
                 print("Jump to advanced page succeed!")
 
             # Fill location USA
             if(False == browser.filterLocation()):
-                print("Fill location failed, exit...")
-                sys.exit(FILL_LOCATION_FAILED)
+                print("Fill location failed")
+                #sys.exit(FILL_LOCATION_FAILED)
+                while(True):
+                    print("You can manually fill location")
+                    time.sleep(5)
             else:
                 print("Fill location succeed!")
             
             # Fill current company 
             time.sleep(1)
             if(False == browser.filterCurrentCompany(keywords_list[i])):
-                print("Fill current company failed, exit...")
-                sys.exit(FILL_CURRENT_COMPANY_FAILED)
+                print("Fill current company failed")
+                #sys.exit(FILL_CURRENT_COMPANY_FAILED)
+                while(True):
+                    print("You can manually input current company: ", + keywords_list[i])
+                    time.sleep(5)
             else:
                 print("Fill current company succeed!")
             
             # Fill years in current company
             time.sleep(1)
             if(False == browser.filterYearsInCurrentCompany()):
-                print("Fill years in current company failed, exit...")
-                sys.exit(FILL_YEARS_IN_CURRENT_COMPANY_FAILED)
+                print("Fill years in current company failed")
+                #sys.exit(FILL_YEARS_IN_CURRENT_COMPANY_FAILED)
+                while(True):
+                    print("You can manually fill years in current company")
+                    time.sleep(5)
             else:
                 print("Fill years in current company succeed!")
            
             # Fill years in current position
             if(False == browser.filterYearsInCurrentPosition(k)):
                 print("Fill years in current position failed, id = " + str(k))
-                sys.exit(FILL_YEARS_IN_CURRENT_POSITION_FAILED)
+                #sys.exit(FILL_YEARS_IN_CURRENT_POSITION_FAILED)
+                while(True):
+                    print("You can manually input years in current position, id = ", + str(k))
+                    time.sleep(5)
 
             # Click "Search" button
             time.sleep(1)
             if(False == browser.goAdvSearch()):
-                print("Click search button failed, exit...")
-                sys.exit(CLICK_SEARCH_BUTTON_FAILED)
+                print("Click search button failed")
+                #sys.exit(CLICK_SEARCH_BUTTON_FAILED)
+                while(True):
+                    print("You can manually click advance search button")
+                    time.sleep(5)
+
             else:
                 print("Click search button succeed!")
             
             if(False == browser.waitPageRefresh()):
-                print("Page refresh failed, exit...")
-                sys.exit(PAGE_REFRESH_FAILED)
+                print("Page refresh failed")
+                #sys.exit(PAGE_companyREFRESH_FAILED)
+                while(True):
+                    print("You can manually refresh page")
+                    time.sleep(5)
 
             # Is limitation?
             total_candidates = browser.isLimitation()
@@ -276,8 +319,11 @@ for i in range(company_num):
     
     time.sleep(1)
     if(False == browser.jumpToHomePage()):
-        print("Jump to home page failed, exit")
-        sys.exit(JUMP_TO_HOME_PAGE_FAILED)
+        print("Jump to home page failed")
+        #sys.exit(JUMP_TO_HOME_PAGE_FAILED)
+        while(True):
+            print("You can manually jump to home page")
+            time.sleep(5)
     else:
         print("Current finished: " + company_list[i] + " , ratio: " + str(i + 1) + " of " + str(company_num))
         time.sleep(1)
