@@ -279,7 +279,7 @@ for i in range(company_num):
         print("Jump to home page failed, exit")
         sys.exit(JUMP_TO_HOME_PAGE_FAILED)
     else:
-        print("Current finished: " + str(i + 1) + " of " + str(company_num))
+        print("Current finished: " + company_list[i] + " , ratio: " + str(i + 1) + " of " + str(company_num))
         time.sleep(1)
 
 fh.writeLogRow(log_fd, "Finished successfully")
