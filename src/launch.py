@@ -246,7 +246,7 @@ for i in range(company_num):
             if(False == browser.filterYearsInCurrentPosition(k)):
                 print("Fill years in current position failed, id = " + str(k))
                 #sys.exit(FILL_YEARS_IN_CURRENT_POSITION_FAILED)
-                print("id = ", + str(k))
+                print("id = " + str(k))
                 tmp = input("You can manually input years in current position")
                 time.sleep(2)
 
