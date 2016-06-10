@@ -660,10 +660,10 @@ class BrowserHandler:
         action.send_keys(company_name)
         action.perform()
         
-        while(False == _waitLocationHintLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_hint)):
-            print("Something wrong happened with company" + company_name + ", You can input manually")
-            time.sleep(1)
-            #return False
+        if(False == _waitLocationHintLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_hint)):
+            #print("Something wrong happened with company" + company_name + ", You can input manually")
+            #time.sleep(1)
+            return False
 
         # Click the hint (send "Arrown Down" key and "Enter" key)
         advLeftRail = None
@@ -685,10 +685,10 @@ class BrowserHandler:
         action.send_keys(Keys.ARROW_DOWN + Keys.ENTER)
         action.perform()
         
-        while(False == _waitLocationLabelLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_label)):
-            print("Something wrong happened with company: " + company_name + ", You can input manually")
-            time.sleep(1)
-            #return False
+        if(False == _waitLocationLabelLoaded(self.mDriver, tag_left_rail, tag_current_company, tag_current_company_label)):
+            #print("Something wrong happened with company: " + company_name + ", You can input manually")
+            #time.sleep(1)
+            return False
 
         return True
 
