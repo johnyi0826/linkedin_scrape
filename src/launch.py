@@ -48,10 +48,11 @@ FILL_LOCATION_FAILED =                      -4
 FILL_KEYWORDS_FAILED =                      -5
 FILL_CURRENT_COMPANY_FAILED =               -6
 FILL_YEARS_IN_CURRENT_COMPANY_FAILED =      -7
-CLICK_SEARCH_BUTTON_FAILED =                -8
-PAGE_REFRESH_FAILED =                       -9
-CURRENT_PAGE_INFO_ERROR =                   -10
-JUMP_TO_HOME_PAGE_FAILED =                  -11
+FILL_YEARS_IN_CURRENT_POSITION_FAILED =     -8
+CLICK_SEARCH_BUTTON_FAILED =                -9
+PAGE_REFRESH_FAILED =                       -10
+CURRENT_PAGE_INFO_ERROR =                   -11
+JUMP_TO_HOME_PAGE_FAILED =                  -12
 
 
 # ##################################################################################
@@ -79,6 +80,7 @@ if(sys_windows == current_system):
     output_filename = output_path + "\\" + default_output_file
     output_log_file = output_path + "\\" + default_log_file
 else:
+    output_filename = output_path + "/" + default_output_file
     output_log_file = output_path + "/" + default_log_file
 
 # If output file exist, rename it with "_bak" suffix
@@ -124,7 +126,7 @@ else:
 # Start loop
 for i in range(company_num):
 
-# Jump to advance search page
+    # Jump to advance search page
     if(False == browser.jumpToAdvancedSearchPage()):
         print("Jump to advanced search page failed")
         sys.exit(JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED)
@@ -177,23 +179,100 @@ for i in range(company_num):
     # Is limitation?
     total_candidates = browser.isLimitation()
     if(0 != total_candidates):
-        fh.writeLogRow(log_fd, "Company: " + company_list[i] + " has reached limitation, total: " + str(total_candidates) + " candidates.")
+        fh.writeLogRow(log_fd, "Company: " + company_list[i] + " has reached limitation, total: " + str(total_candidates) + " candidates, split into 3 parts.")
+
+        for k in range(1, 4):
+            time.sleep(1)
+
+            # Jump to advance search page
+            if(False == browser.jumpToHomePage()):
+                print("Jump to home page failed, exit")
+                sys.exit(JUMP_TO_HOME_PAGE_FAILED)
+
+            if(False == browser.jumpToAdvancedSearchPage()):
+                print("Jump to advanced search page failed")
+                sys.exit(JUMP_TO_ADVANCED_SEARCH_PAGE_FAILED)
+            else:
+                print("Jump to advanced page succeed!")
+
+            # Fill location USA
+            if(False == browser.filterLocation()):
+                print("Fill location failed, exit...")
+                sys.exit(FILL_LOCATION_FAILED)
+            else:
+                print("Fill location succeed!")
+            
+            # Fill current company 
+            time.sleep(1)
+            if(False == browser.filterCurrentCompany(keywords_list[i])):
+                print("Fill current company failed, exit...")
+                sys.exit(FILL_CURRENT_COMPANY_FAILED)
+            else:
+                print("Fill current company succeed!")
+            
+            # Fill years in current company
+            time.sleep(1)
+            if(False == browser.filterYearsInCurrentCompany()):
+                print("Fill years in current company failed, exit...")
+                sys.exit(FILL_YEARS_IN_CURRENT_COMPANY_FAILED)
+            else:
+                print("Fill years in current company succeed!")
+           
+            # Fill years in current position
+            if(False == browser.filterYearsInCurrentPosition(k)):
+                print("Fill years in current position failed, id = " + str(k))
+                sys.exit(FILL_YEARS_IN_CURRENT_POSITION_FAILED)
+
+            # Click "Search" button
+            time.sleep(1)
+            if(False == browser.goAdvSearch()):
+                print("Click search button failed, exit...")
+                sys.exit(CLICK_SEARCH_BUTTON_FAILED)
+            else:
+                print("Click search button succeed!")
+            
+            if(False == browser.waitPageRefresh()):
+                print("Page refresh failed, exit...")
+                sys.exit(PAGE_REFRESH_FAILED)
+
+            # Is limitation?
+            total_candidates = browser.isLimitation()
+            if(0 != total_candidates):
+                fh.writeLogRow(log_fd, "Company: " + company_list[i] + " with split id = " + str(k) + " still has reached limitation, total: " + str(total_candidates) + " candidates.")
+
+            while(True):
+                time.sleep(2)
+                info_page = {} 
+                info_page = browser.getEmployerInfo(company_list[i], keywords_list[i])
+                if(not info_page):
+                    print("No candidate, break...")
+                    fh.writeLogRow(log_fd, "Company: " + company_list[i] + " has no candidates, split id = " + str(k))
+                    #sys.exit(CURRENT_PAGE_INFO_ERROR)
+                    break
+            
+                for x in range(len(info_page)):
+                    fh.writeRow(fw, info_page[str(x)])
+            
+                if(False == browser.clickNextPage()):
+                    break
     
-    while(True):
-        time.sleep(2)
-        info_page = {} 
-        info_page = browser.getEmployerInfo(company_list[i], keywords_list[i])
-        if(not info_page):
-            print("No candidite, break...")
-            fh.writeLogRow(log_fd, "Company: " + company_list[i] + " has no candidates.")
-            #sys.exit(CURRENT_PAGE_INFO_ERROR)
-            break
+    else:
     
-        for x in range(len(info_page)):
-            fh.writeRow(fw, info_page[str(x)])
-    
-        if(False == browser.clickNextPage()):
-            break
+        while(True):
+            time.sleep(2)
+            info_page = {} 
+            info_page = browser.getEmployerInfo(company_list[i], keywords_list[i])
+            if(not info_page):
+                print("No candidate, break...")
+                fh.writeLogRow(log_fd, "Company: " + company_list[i] + " has no candidates.")
+                #sys.exit(CURRENT_PAGE_INFO_ERROR)
+                break
+        
+            for x in range(len(info_page)):
+                fh.writeRow(fw, info_page[str(x)])
+        
+            if(False == browser.clickNextPage()):
+                break
     
     time.sleep(1)
     if(False == browser.jumpToHomePage()):

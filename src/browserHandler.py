@@ -54,6 +54,16 @@ tag_add_button =                'button'
 tag_btn_years =                 "//button[@data-id='3']"
 tag_txt_years =                 "//li[@data-id='3']"
 
+tag_left_rail_facet =           'left-rail-facets'
+tag_years_in_current_pos =      'facet-yearsInCurrentPosition'
+tag_del_button =                "//button[contains(@class, 'remove')]"
+tag_btn_years_id_1 =            "//button[@data-id='1']"
+tag_txt_years_id_1 =            "//li[@data-id='1']"
+tag_btn_years_id_2 =            "//button[@data-id='2']"
+tag_txt_years_id_2 =            "//li[@data-id='2']"
+tag_btn_years_id_3 =            "//button[@data-id='3']"
+tag_txt_years_id_3 =            "//li[@data-id='3']"
+
 tag_location =                  'facet-location'
 txt_fill_location =             'United State'
 tag_add_pills =                 'add-pills'
@@ -387,13 +397,105 @@ class BrowserHandler:
         if(None == btn_list):
             return False
 
-        btn_less_than_one_year = None
-        btn_less_than_one_year = btn_list.find_element_by_xpath(tag_btn_years)
-        if(None == btn_less_than_one_year):
+        btn_years = None
+        btn_years = btn_list.find_element_by_xpath(tag_btn_years)
+        if(None == btn_years):
             return False
 
-        btn_less_than_one_year.click()
+        btn_years.click()
         if(False == _waitTextFilled(self.mDriver, tag_left_rail, tag_years_in_current_company, tag_txt_years)):
+            return False
+
+        return True
+
+
+# ##################################################################################
+# @brief                Fill the filter "Years in current position"
+#
+# @param tag_id         1: less than one year, 2: 1 - 2 years, 3: 3 - 5 years
+# @param need_delete    Whether need to delete previous input
+# @return               Filled success or not
+# ##################################################################################
+
+    def filterYearsInCurrentPosition(self, tag_id):
+        advLeftRail = None
+        # Check whether need to delete
+        # if(1 != tag_id):
+        #     advLeftRail = self.mDriver.find_element_by_id(tag_left_rail_facet)
+        #     if(None == advLeftRail):
+        #         return False
+
+        #     group_years_in_current_position = None
+        #     group_years_in_current_position = advLeftRail.find_element_by_id(tag_years_in_current_pos)
+        #     if(None == group_years_in_current_position):
+        #         return False
+
+        #     self.mDriver.execute_script('arguments[1].scrollTop = arguments[1].scrollHeight', group_years_in_current_position)
+
+        #     print("delete previous filter")
+        #     btn_delete = None
+        #     btn_delete = group_years_in_current_position.find_element_by_tag_name(tag_li).find_element_by_xpath(tag_del_button)
+        #     if(None == btn_delete):
+        #         return False
+        #     btn_delete.click()
+        #     time.sleep(1)
+
+        # Click add button
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
+            return False
+
+        group_years_in_current_position = None
+        group_years_in_current_position = advLeftRail.find_element_by_id(tag_years_in_current_pos)
+        if(None == group_years_in_current_position):
+            return False
+
+        btn_years_in_current_position = None
+        btn_years_in_current_position = group_years_in_current_position.find_element_by_tag_name(tag_add_button)
+        if(None == btn_years_in_current_position):
+            return False
+
+        btn_years_in_current_position.click()
+        if(False == _waitAddButtonLoaded(self.mDriver, tag_left_rail, tag_years_in_current_pos, tag_suggestions, tag_add_button)):
+            return False
+
+        # Click first button
+        time.sleep(1)
+        advLeftRail = None
+        advLeftRail = self.mDriver.find_element_by_id(tag_left_rail)
+        if(None == advLeftRail):
+            return False
+
+        group_years_in_current_position = advLeftRail.find_element_by_id(tag_years_in_current_pos)
+        if(None == group_years_in_current_position):
+            return False
+
+        group_suggestions = None
+        group_suggestions = group_years_in_current_position.find_element_by_class_name(tag_suggestions)
+        if(None == group_suggestions):
+            return False
+
+        btn_list = None
+        btn_list = group_suggestions.find_element_by_tag_name(tag_li)
+        if(None == btn_list):
+            return False
+
+        btn_years = None
+        find_txt = ""
+        if(1 == tag_id):
+            btn_years = btn_list.find_element_by_xpath(tag_btn_years_id_1)
+            find_txt = tag_txt_years_id_1
+        elif(2 == tag_id):
+            btn_years = btn_list.find_element_by_xpath(tag_btn_years_id_2)
+            find_txt = tag_txt_years_id_2
+        elif(3 == tag_id):
+            btn_years = btn_list.find_element_by_xpath(tag_btn_years_id_3)
+            find_txt = tag_txt_years_id_3
+        if(None == btn_years):
+            return False
+
+        btn_years.click()
+        if(False == _waitTextFilled(self.mDriver, tag_left_rail, tag_years_in_current_pos, find_txt)):
             return False
 
         return True

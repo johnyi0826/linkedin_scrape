@@ -71,7 +71,7 @@ def _parseCSVInputFile(file_name):
     company_list = []
     keywords_list = []
     count = 0
-    for line in open(file_name):
+    for line in open(file_name, errors='ignore'):
         gvkey, year, uai, conm, keyword = line.split(',')
         conm = conm.strip('\t\r\n')
         keyword = keyword.strip('\t\r\n')
