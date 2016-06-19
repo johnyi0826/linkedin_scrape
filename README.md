@@ -2,7 +2,7 @@ Introduction
 
 This program is used to scrape the basic info from the LinkedIn.
 
-To get the best performance, Linux system is strongly recommended. It would take 3 to 4 seconds for open one individual page. For Windows, it would take 8 to 10 seconds, while for Mac OS, it would take 15 to 20 seconds. Because the webdriver libaray is well supported in Linux. 
+To get the best performance, Linux system is strongly recommended. It would take 3 to 4 seconds to open one individual page. For Windows, it would take 8 to 10 seconds, while for Mac OS, it would take 15 to 20 seconds. Because the webdriver libaray is well supported in Linux. 
 
 
 Installation
