@@ -90,7 +90,7 @@ Step 5:
 Leave the PC there and when the program finished, the output file "result.csv" will be in the same directory as the input file.
 
 
-Error handleing:
+Error handling:
 
 If the browser stopped and the program is still running, please check the standard output from the terminal, and manually input the missing filter. Then input something like "a" in the terminal and press "Enter" key, and switch back to the browser. The program would run continuously. Since sometimes the company keywords cannot match any company, or sometimes the server does not response the http request.
 
