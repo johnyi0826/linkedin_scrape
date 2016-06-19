@@ -842,7 +842,7 @@ class BrowserHandler:
 
 
 # ##################################################################################
-# @brief                Click next page button
+# @brief                Click next page button, from Aaron
 #
 # @return               Clicked or no next page button
 # ##################################################################################
