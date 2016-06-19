@@ -109,46 +109,7 @@ linkedin_prefix =               "www.linkedin.com"
 
 
 # ##################################################################################
-# @brief                        Wait function from http://www.obeythetestinggoat.com/how-to-get-selenium-to-wait-for-page-load-after-a-click.html
-#
-# @param condition_function     Callback function
-# @return                       Page loaded or not
-# ##################################################################################
-
-def _wait_for(condition_function):
-    start_time = time.time()
-    while time.time() < start_time + 60:
-        if condition_function():
-            return True
-        else:
-            time.sleep(0.1)
-    raise Exception(
-        'Timeout waiting for {}'.format(condition_function.__name__)
-    )
-
-
-# ##################################################################################
-# @brief                Wait class from from http://www.obeythetestinggoat.com/how-to-get-selenium-to-wait-for-page-load-after-a-click.html
-#
-# @class                wait_for_page_load
-# ##################################################################################
-
-class wait_for_page_load(object):
-	def __init__(self, browser):
-		self.browser = browser
-	def __enter__(self):
-		self.old_page = self.browser.find_element_by_tag_name('html')
-		self.old_url = self.browser.current_url
-	def page_has_loaded(self):
-		new_page = self.browser.find_element_by_tag_name('html')
-		new_url = self.browser.current_url
-		return new_url != self.old_url
-	def __exit__(self, *_):
-		_wait_for(self.page_has_loaded)
-
-
-# ##################################################################################
-# @brief                Wait for page loaded
+# @brief                Wait for page loaded, from Aaron
 #
 # @param browser        Current browser
 # @return               Page loaded success or not
@@ -306,7 +267,7 @@ class BrowserHandler:
 
 
 # ##################################################################################
-# @brief                Login LinkedIn Recruiter home page
+# @brief                Login LinkedIn Recruiter home page, from Aaron
 #
 # @return               Login success or not
 # ##################################################################################
@@ -771,7 +732,7 @@ class BrowserHandler:
 
 
 # ##################################################################################
-# @brief                Get the employers' info in current page
+# @brief                Get the employers' info in current page, from Aaron
 #
 # @param company        Current company
 # @return               Employers' info
