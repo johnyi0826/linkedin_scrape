@@ -94,5 +94,5 @@ Error handleing:
 
 If the browser stopped and the program is still running, please check the standard output from the terminal, and manually input the missing filter. Then input something like "a" in the terminal and press "Enter" key, and switch back to the browser. The program would run continuously. Since sometimes the company keywords cannot match any company, or sometimes the server does not response the http request.
 
-If something unexpected happended like network down or kicked out by the server, and program is terminated, please rename the result.csv to another file name like result_1.csv (please also do this to log.txt), then delete the companies which has already been parsed from the input file (you can find the parsed companies from the terminal standard output), and run the program again.
+If something unexpected happended like network down or kicked out by the server, and program is terminated, please rename the result.csv to another file name like result_1.csv (please also do this to log.txt), then delete the companies which have already been parsed from the input file (you can find the parsed companies from the terminal standard output), and run the program again.
 
